@@ -1,0 +1,143 @@
+# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
+# Defects: problems that VIOLATE requirements and manifest in AFFECTED components.
+defects:
+  - id: DEF-0001
+    title: Cell over-temperature during fast discharge
+    description: A cell module exceeded its temperature limit during a fast-discharge bench run.
+    severity: critical
+    status: open
+    affects: [ARC-CELL]
+    violates: [REQ-0111, REQ-0114]
+  - id: DEF-0002
+    title: Phase-current transient exceeds limit
+    description: Motor-controller phase current briefly exceeded the limit during a torque step.
+    severity: major
+    status: in_analysis
+    affects: [ARC-MCTRL]
+    violates: [REQ-0101]
+  - id: DEF-0003
+    title: Actuator drifts hard-over on power loss
+    description: On power removal an actuator moved toward hard-over instead of the safe position.
+    severity: critical
+    status: open
+    affects: [ARC-ACT]
+    violates: [REQ-0306]
+  - id: DEF-0004
+    title: SoC drift under cold soak
+    description: Reported state of charge drifts beyond accuracy after cold soak.
+    severity: major
+    status: open
+    affects: [ARC-BMS]
+    violates: [REQ-0113]
+  - id: DEF-0005
+    title: Display glare in direct sun
+    description: Primary flight data hard to read in direct sunlight at certain angles.
+    severity: minor
+    status: closed
+    affects: [ARC-DISP]
+    violates: [REQ-0202]
+  - id: DEF-0006
+    title: HV bus voltage sag under load step
+    description: HV bus voltage briefly dipped below the lower bound during a load step.
+    severity: major
+    status: open
+    affects: [ARC-HVBUS]
+    violates: [REQ-0401]
+  - id: DEF-0007
+    title: Contactor weld risk on repeated interrupts
+    description: Repeated fault interrupts raise contactor weld risk.
+    severity: major
+    status: in_analysis
+    affects: [ARC-CONT]
+    violates: [REQ-0403]
+  - id: DEF-0008
+    title: Chafe marks on wing-root harness
+    description: Inspection found chafe marks on wiring near the wing root.
+    severity: minor
+    status: open
+    affects: [ARC-CONT, ARC-WING]
+    violates: [REQ-0404]
+  - id: DEF-0009
+    title: Attitude estimate lags in rapid manoeuvre
+    description: Attitude estimate lags reference during rapid manoeuvres.
+    severity: major
+    status: open
+    affects: [ARC-ADAHRS]
+    violates: [REQ-0201]
+  - id: DEF-0010
+    title: Endurance estimate optimistic at low SoC
+    description: Remaining-endurance estimate reads optimistic at low state of charge.
+    severity: minor
+    status: fixed
+    affects: [ARC-FC]
+    violates: [REQ-0200]
+  - id: DEF-0011
+    title: Aileron actuator backlash exceeds spec
+    description: Measured backlash in the aileron actuator path exceeds specification.
+    severity: major
+    status: open
+    affects: [ARC-ACT, ARC-AIL]
+    violates: [REQ-0301, REQ-0304]
+  - id: DEF-0012
+    title: Inceptor feel force slightly high
+    description: Artificial-feel force is marginally above the specified curve.
+    severity: minor
+    status: closed
+    affects: [ARC-INCEPT]
+    violates: [REQ-0307]
+  - id: DEF-0013
+    title: Propeller vibration in RPM band
+    description: Elevated propeller vibration observed in a narrow RPM band.
+    severity: critical
+    status: in_analysis
+    affects: [ARC-PROPELLER]
+    violates: [REQ-0103]
+  - id: DEF-0014
+    title: LV backup transfer slow
+    description: LV backup transfer time exceeds the specified limit.
+    severity: major
+    status: open
+    affects: [ARC-LVBUS]
+    violates: [REQ-0402]
+  - id: DEF-0015
+    title: Landing-gear oleo seal seepage
+    description: Minor hydraulic seepage at the oleo seal after drop testing.
+    severity: minor
+    status: open
+    affects: [ARC-GEAR]
+    violates: [REQ-0503]
+  - id: DEF-0016
+    title: Battery pack hotspot in sustained climb
+    description: A pack hotspot near module 3 develops during sustained climb.
+    severity: major
+    status: open
+    affects: [ARC-BATT, ARC-CELL]
+    violates: [REQ-0115, REQ-0111]
+  - id: DEF-0017
+    title: Wing-tip deflection above estimate
+    description: Wing-tip deflection at limit load exceeded the analytical estimate.
+    severity: minor
+    status: fixed
+    affects: [ARC-WING]
+    violates: [REQ-0501]
+  - id: DEF-0018
+    title: Critical annunciation delayed
+    description: A critical-fault annunciation exceeded the allocated time in one run.
+    severity: major
+    status: in_analysis
+    affects: [ARC-FC]
+    violates: [REQ-0203]
+  - id: DEF-0019
+    title: Charging interlock intermittent
+    description: The charging interlock occasionally needs a connector re-seat.
+    severity: minor
+    status: open
+    affects: [ARC-CONT]
+    violates: [REQ-0405]
+  - id: DEF-0020
+    title: Motor torque ripple at low speed
+    description: Torque ripple at low speed exceeds the smoothness target.
+    severity: major
+    status: open
+    affects: [ARC-MOTOR]
+    violates: [REQ-0102]

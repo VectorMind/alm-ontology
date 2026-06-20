@@ -1,0 +1,50 @@
+# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
+# Verification: each test case verifies one requirement and carries an outcome.
+# Deliberate gaps: REQ-0306 (failed-only) and REQ-0112 (not_run) -> DAL-A coverage gaps.
+test_cases:
+  - { id: TST-0001, title: Envelope flight test, verifies: REQ-0001, outcome: passed }
+  - { id: TST-0002, title: Loss-of-thrust safety assessment, verifies: REQ-0002, outcome: passed }
+  - { id: TST-0003, title: Display accuracy in flight, verifies: REQ-0003, outcome: passed }
+  - { id: TST-0004, title: Pilot workload assessment, verifies: REQ-0004, outcome: passed }
+
+  - { id: TST-0100, title: Thrust-vs-command bench test, verifies: REQ-0100, outcome: passed }
+  - { id: TST-0101, title: Current-limit over-command test, verifies: REQ-0101, outcome: passed }
+  - { id: TST-0102, title: Motor dynamometer torque test, verifies: REQ-0102, outcome: passed }
+  - { id: TST-0103, title: Static thrust efficiency test, verifies: REQ-0103, outcome: passed }
+  - { id: TST-0110, title: Mission discharge capacity test, verifies: REQ-0110, outcome: passed }
+  - { id: TST-0111, title: Cell thermal-runaway abuse test, verifies: REQ-0111, outcome: passed }
+  # REQ-0112 verified only by a not_run test -> DAL-A coverage gap (deliberate)
+  - { id: TST-0112, title: Over-voltage/over-current fault injection, verifies: REQ-0112, outcome: not_run }
+  - { id: TST-0113, title: SoC accuracy test, verifies: REQ-0113, outcome: passed }
+  - { id: TST-0114, title: Cell-balancing cycling test, verifies: REQ-0114, outcome: passed }
+  - { id: TST-0115, title: Pack thermal worst-case test, verifies: REQ-0115, outcome: passed }
+
+  - { id: TST-0200, title: Endurance computation test, verifies: REQ-0200, outcome: passed }
+  - { id: TST-0201, title: Attitude accuracy manoeuvre test, verifies: REQ-0201, outcome: passed }
+  - { id: TST-0202, title: Display readability test, verifies: REQ-0202, outcome: passed }
+  - { id: TST-0203, title: Critical-fault annunciation timing test, verifies: REQ-0203, outcome: passed }
+  - { id: TST-0204, title: Sensor fault-isolation test, verifies: REQ-0204, outcome: passed }
+  - { id: TST-0205, title: Endurance indication test, verifies: REQ-0205, outcome: passed }
+
+  - { id: TST-0300, title: Control-authority flight test, verifies: REQ-0300, outcome: passed }
+  - { id: TST-0301, title: Actuator step-response latency test, verifies: REQ-0301, outcome: passed }
+  - { id: TST-0302, title: Inceptor command-path test, verifies: REQ-0302, outcome: passed }
+  - { id: TST-0303, title: Elevator authority test, verifies: REQ-0303, outcome: passed }
+  - { id: TST-0304, title: Aileron authority test, verifies: REQ-0304, outcome: passed }
+  - { id: TST-0305, title: Rudder authority test, verifies: REQ-0305, outcome: passed }
+  # REQ-0306 verified only by a failed test -> DAL-A coverage gap (deliberate)
+  - { id: TST-0306, title: Actuator power-removal safe-position test, verifies: REQ-0306, outcome: failed }
+  - { id: TST-0307, title: Inceptor artificial-feel curve test, verifies: REQ-0307, outcome: failed }
+
+  - { id: TST-0400, title: HV insulation and fault-isolation test, verifies: REQ-0400, outcome: passed }
+  - { id: TST-0401, title: HV bus load-step regulation test, verifies: REQ-0401, outcome: passed }
+  - { id: TST-0402, title: LV backup transfer test, verifies: REQ-0402, outcome: passed }
+  - { id: TST-0403, title: Contactor disconnect timing test, verifies: REQ-0403, outcome: passed }
+  - { id: TST-0404, title: Wiring chafe vibration test, verifies: REQ-0404, outcome: not_run }
+  - { id: TST-0405, title: Charging interlock test, verifies: REQ-0405, outcome: passed }
+
+  - { id: TST-0500, title: Static limit-load test, verifies: REQ-0500, outcome: passed }
+  - { id: TST-0501, title: Wing load test, verifies: REQ-0501, outcome: passed }
+  - { id: TST-0502, title: Empennage load test, verifies: REQ-0502, outcome: passed }
+  - { id: TST-0503, title: Landing-gear drop test, verifies: REQ-0503, outcome: passed }
+  - { id: TST-0504, title: Occupant volume mock-up review, verifies: REQ-0504, outcome: passed }

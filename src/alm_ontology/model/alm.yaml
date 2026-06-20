@@ -1,0 +1,164 @@
+id: https://vectormind.example/alm-ontology
+name: alm-ontology
+title: ALM Ontology (VM-E1 example slice)
+description: >-
+  LinkML model (Layer 0, the spine) for the ALM ontology POC. Defines the entity
+  types, controlled vocabularies (DAL), and permitted relationships for the
+  fictional VM-E1 'Sparrow' single-seat electric aircraft. This single artifact is
+  the source of truth from which Pydantic types, SQL DDL, and documentation are
+  generated. FULLY AI-GENERATED DUMMY MODEL — not for real-world use.
+license: MIT
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  alm: https://vectormind.example/alm-ontology/
+default_prefix: alm
+default_range: string
+
+imports:
+  - linkml:types
+
+# ---------------------------------------------------------------------------
+# Controlled vocabularies
+# ---------------------------------------------------------------------------
+enums:
+  DALEnum:
+    description: >-
+      Design Assurance Level (DO-178C / ARP4754A). A is most critical
+      (catastrophic), E is no-effect. Aerospace analogue of automotive ASIL.
+    permissible_values:
+      A: { description: Catastrophic — failure may cause loss of aircraft/life }
+      B: { description: Hazardous — large negative safety margin reduction }
+      C: { description: Major — significant reduction in safety margin }
+      D: { description: Minor — slight reduction in safety margin }
+      E: { description: No safety effect }
+
+  OutcomeEnum:
+    description: Outcome carried by a verification (test -> requirement) relationship.
+    permissible_values:
+      passed: {}
+      failed: {}
+      not_run: {}
+
+  SeverityEnum:
+    description: Defect severity.
+    permissible_values:
+      critical: {}
+      major: {}
+      minor: {}
+
+  DefectStatusEnum:
+    description: Defect lifecycle status.
+    permissible_values:
+      open: {}
+      in_analysis: {}
+      fixed: {}
+      closed: {}
+
+  ElementKindEnum:
+    description: Coarse kind of an architecture element.
+    permissible_values:
+      system: {}
+      subsystem: {}
+      component: {}
+
+# ---------------------------------------------------------------------------
+# Slots
+# ---------------------------------------------------------------------------
+slots:
+  id:
+    identifier: true
+    description: Stable identifier (e.g. REQ-0001, ARC-PROP, TST-0007, DEF-0003).
+  title:
+    description: Short human-readable title.
+  name:
+    description: Human-readable name.
+  statement:
+    description: The binding specification text — what shall be achieved.
+  acceptance:
+    description: Acceptance criteria that decide whether the requirement is met.
+  description:
+    description: Free-text description.
+  rationale:
+    description: Why this exists.
+  dal:
+    range: DALEnum
+    description: Design Assurance Level of a requirement.
+  kind:
+    range: ElementKindEnum
+    description: Coarse kind of an architecture element.
+  outcome:
+    range: OutcomeEnum
+    description: Result carried by a verification relationship.
+  severity:
+    range: SeverityEnum
+  status:
+    range: DefectStatusEnum
+
+  # relationships
+  refines:
+    range: Requirement
+    multivalued: true
+    description: This requirement refines (decomposes) the referenced parent(s); transitive.
+  composed_of:
+    range: ArchitectureElement
+    multivalued: true
+    description: This element is composed of the referenced sub-element(s); transitive.
+  satisfies:
+    range: Requirement
+    multivalued: true
+    description: >-
+      Allocation — this architecture element is allocated the referenced
+      requirement(s) (i.e. requirement allocated_to element).
+  verifies:
+    range: Requirement
+    description: The single requirement this test case verifies (carries an outcome).
+  affects:
+    range: ArchitectureElement
+    multivalued: true
+    description: Architecture element(s) where this defect manifests.
+  violates:
+    range: Requirement
+    multivalued: true
+    description: Requirement(s) this defect violates.
+
+# ---------------------------------------------------------------------------
+# Classes
+# ---------------------------------------------------------------------------
+classes:
+  Requirement:
+    description: A binding specification statement, with a DAL.
+    slots: [id, title, statement, acceptance, rationale, dal, refines]
+
+  ArchitectureElement:
+    description: A feature/component in the technical breakdown.
+    slots: [id, name, kind, description, composed_of, satisfies]
+
+  TestCase:
+    description: A verification that asserts a requirement, carrying an outcome.
+    slots: [id, title, description, verifies, outcome]
+
+  Defect:
+    description: A problem that violates requirement(s) in affected component(s).
+    slots: [id, title, description, severity, status, affects, violates]
+
+  Dataset:
+    description: Top-level container (used for collection-level validation/generation).
+    tree_root: true
+    attributes:
+      requirements:
+        range: Requirement
+        multivalued: true
+        inlined_as_list: true
+      architecture_elements:
+        range: ArchitectureElement
+        multivalued: true
+        inlined_as_list: true
+      test_cases:
+        range: TestCase
+        multivalued: true
+        inlined_as_list: true
+      defects:
+        range: Defect
+        multivalued: true
+        inlined_as_list: true

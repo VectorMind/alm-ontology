@@ -1,0 +1,168 @@
+# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
+# Technical breakdown of the VM-E1, AUTHORED FROM the requirements.
+#   composed_of : decomposition (parent is composed of children)
+#   satisfies   : allocation (this element is allocated the listed requirements)
+architecture_elements:
+  # ---------------- System ----------------
+  - id: ARC-AC
+    name: VM-E1 Sparrow Aircraft
+    kind: system
+    description: Single-seat electric light aircraft (fictional).
+    composed_of: [ARC-PROP, ARC-AVI, ARC-FCS, ARC-ELEC, ARC-FRAME]
+    # System-level requirements (REQ-0001..0004) are realised by DECOMPOSITION
+    # (refines) into sub-requirements allocated to specific components, not by direct
+    # allocation to the whole aircraft. Leaving this empty keeps DAL propagation
+    # meaningful (a top-level DAL-A allocation here would flood every element with A).
+    satisfies: []
+
+  # ---------------- Propulsion ----------------
+  - id: ARC-PROP
+    name: Propulsion Subsystem
+    kind: subsystem
+    description: Converts stored electrical energy into propulsive thrust.
+    composed_of: [ARC-BATT, ARC-MCTRL, ARC-MOTOR, ARC-PROPELLER]
+    satisfies: [REQ-0100]
+  - id: ARC-BATT
+    name: Battery Pack
+    kind: subsystem
+    description: High-voltage energy storage with management and thermal control.
+    composed_of: [ARC-CELL, ARC-BMS]
+    satisfies: [REQ-0110, REQ-0115]
+  - id: ARC-CELL
+    name: Cell Modules
+    kind: component
+    description: Series/parallel lithium cell modules.
+    satisfies: [REQ-0114]
+  - id: ARC-BMS
+    name: Battery Management System
+    kind: component
+    description: Monitors and protects cells; reports state of charge.
+    satisfies: [REQ-0111, REQ-0112, REQ-0113]
+  - id: ARC-MCTRL
+    name: Motor Controller / Inverter
+    kind: component
+    description: Drives the motor and limits phase current.
+    satisfies: [REQ-0101]
+  - id: ARC-MOTOR
+    name: Electric Motor
+    kind: component
+    description: Provides shaft torque to the propeller.
+    satisfies: [REQ-0102]
+  - id: ARC-PROPELLER
+    name: Propeller
+    kind: component
+    description: Converts shaft power to thrust.
+    satisfies: [REQ-0103]
+
+  # ---------------- Avionics ----------------
+  - id: ARC-AVI
+    name: Avionics Subsystem
+    kind: subsystem
+    description: Sensing, computation, annunciation, and display.
+    composed_of: [ARC-FC, ARC-ADAHRS, ARC-DISP]
+    satisfies: []
+  - id: ARC-FC
+    name: Flight Computer
+    kind: component
+    description: Computes energy state, detects faults, annunciates to pilot.
+    satisfies: [REQ-0200, REQ-0203, REQ-0204]
+  - id: ARC-ADAHRS
+    name: Air-Data & Attitude Unit
+    kind: component
+    description: Provides attitude and air-data.
+    satisfies: [REQ-0201]
+  - id: ARC-DISP
+    name: Cockpit Display
+    kind: component
+    description: Presents primary flight data and endurance.
+    satisfies: [REQ-0202, REQ-0205]
+
+  # ---------------- Flight controls ----------------
+  - id: ARC-FCS
+    name: Flight Control System
+    kind: subsystem
+    description: Translates pilot commands into control-surface deflections.
+    composed_of: [ARC-ACT, ARC-INCEPT, ARC-SURF]
+    satisfies: [REQ-0300]
+  - id: ARC-ACT
+    name: Control Surface Actuators
+    kind: component
+    description: Electromechanical actuators driving the control surfaces.
+    satisfies: [REQ-0301, REQ-0306]
+  - id: ARC-INCEPT
+    name: Pilot Inceptors
+    kind: component
+    description: Stick and pedals with artificial feel.
+    satisfies: [REQ-0302, REQ-0307]
+  - id: ARC-SURF
+    name: Control Surfaces
+    kind: subsystem
+    description: Elevator, ailerons, and rudder.
+    composed_of: [ARC-ELEV, ARC-AIL, ARC-RUD]
+    satisfies: []
+  - id: ARC-ELEV
+    name: Elevator
+    kind: component
+    description: Provides pitch authority.
+    satisfies: [REQ-0303]
+  - id: ARC-AIL
+    name: Ailerons
+    kind: component
+    description: Provide roll authority.
+    satisfies: [REQ-0304]
+  - id: ARC-RUD
+    name: Rudder
+    kind: component
+    description: Provides yaw authority.
+    satisfies: [REQ-0305]
+
+  # ---------------- Electrical ----------------
+  - id: ARC-ELEC
+    name: Electrical System
+    kind: subsystem
+    description: HV and LV power distribution and protection.
+    composed_of: [ARC-HVBUS, ARC-LVBUS, ARC-CONT]
+    satisfies: [REQ-0400]
+  - id: ARC-HVBUS
+    name: HV DC Bus
+    kind: component
+    description: High-voltage distribution bus.
+    satisfies: [REQ-0401]
+  - id: ARC-LVBUS
+    name: LV DC Bus
+    kind: component
+    description: Low-voltage avionics bus with backup.
+    satisfies: [REQ-0402]
+  - id: ARC-CONT
+    name: Contactors & Wiring
+    kind: component
+    description: HV contactors, harnessing, and charging interface.
+    satisfies: [REQ-0403, REQ-0404, REQ-0405]
+
+  # ---------------- Airframe ----------------
+  - id: ARC-FRAME
+    name: Airframe
+    kind: subsystem
+    description: Primary structure.
+    composed_of: [ARC-FUSE, ARC-WING, ARC-EMP, ARC-GEAR]
+    satisfies: [REQ-0500]
+  - id: ARC-FUSE
+    name: Fuselage
+    kind: component
+    description: Occupant volume and primary load path.
+    satisfies: [REQ-0504]
+  - id: ARC-WING
+    name: Wing
+    kind: component
+    description: Lifting surface carrying flight and ground loads.
+    satisfies: [REQ-0501]
+  - id: ARC-EMP
+    name: Empennage
+    kind: component
+    description: Horizontal and vertical stabilisers.
+    satisfies: [REQ-0502]
+  - id: ARC-GEAR
+    name: Landing Gear
+    kind: component
+    description: Absorbs landing loads.
+    satisfies: [REQ-0503]

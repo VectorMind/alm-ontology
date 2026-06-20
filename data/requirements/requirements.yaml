@@ -1,0 +1,280 @@
+# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
+# Binding specification for the fictional VM-E1 "Sparrow" single-seat electric aircraft.
+# Each requirement: id, title, statement, acceptance, dal (A=most critical .. E), refines.
+requirements:
+  # ---------------- System level ----------------
+  - id: REQ-0001
+    title: Safe flight and landing
+    statement: The aircraft shall maintain controlled flight and enable a safe landing across all defined operating conditions.
+    acceptance: Demonstrated by flight test across the operating envelope with no loss of control.
+    dal: A
+
+  - id: REQ-0002
+    title: Loss of propulsive thrust
+    statement: Complete loss of propulsive thrust shall be extremely improbable across the defined mission.
+    acceptance: Quantitative safety assessment shows loss-of-thrust rate below the allocated budget.
+    dal: A
+    refines: [REQ-0001]
+
+  - id: REQ-0003
+    title: Pilot situational awareness
+    statement: The aircraft shall provide the pilot with accurate attitude, airspeed, and energy-state information.
+    acceptance: Displayed values track reference within accuracy bounds during flight test.
+    dal: B
+    refines: [REQ-0001]
+
+  - id: REQ-0004
+    title: Operability
+    statement: The aircraft shall be operable by a single qualified pilot without undue workload.
+    acceptance: Pilot workload assessment within acceptable limits.
+    dal: C
+
+  # ---------------- Propulsion ----------------
+  - id: REQ-0100
+    title: Deliver commanded thrust
+    statement: The propulsion subsystem shall deliver thrust tracking the commanded value within defined tolerance.
+    acceptance: Bench and flight test show thrust within tolerance of command.
+    dal: A
+    refines: [REQ-0001]
+
+  - id: REQ-0101
+    title: Motor controller current limiting
+    statement: The motor controller shall limit phase current to within safe bounds under all commands and faults.
+    acceptance: Injected over-command never exceeds current limit in test.
+    dal: A
+    refines: [REQ-0100]
+
+  - id: REQ-0102
+    title: Motor rated torque
+    statement: The electric motor shall provide rated torque across the operating speed range.
+    acceptance: Dynamometer test confirms torque vs speed curve.
+    dal: A
+    refines: [REQ-0100]
+
+  - id: REQ-0103
+    title: Propeller thrust conversion
+    statement: The propeller shall convert shaft power to thrust at the specified efficiency.
+    acceptance: Wind-tunnel/static thrust test meets efficiency target.
+    dal: B
+    refines: [REQ-0100]
+
+  - id: REQ-0110
+    title: Battery energy for mission
+    statement: The battery pack shall store sufficient energy for the full design mission plus reserve.
+    acceptance: Discharge test delivers mission energy plus reserve at end-of-life capacity.
+    dal: A
+    refines: [REQ-0002]
+
+  - id: REQ-0111
+    title: Prevent cell thermal runaway
+    statement: The battery management system shall prevent cell over-temperature and contain any single-cell thermal runaway.
+    acceptance: Abuse test shows no propagation beyond the initiating cell.
+    dal: A
+    refines: [REQ-0110]
+
+  - id: REQ-0112
+    title: Over-voltage and over-current protection
+    statement: The battery management system shall prevent cell over-voltage and over-current during charge and discharge.
+    acceptance: Fault-injection holds cell voltage and current within limits.
+    dal: A
+    refines: [REQ-0110]
+
+  - id: REQ-0113
+    title: Report state of charge
+    statement: The battery management system shall report state of charge to the flight computer at the defined rate and accuracy.
+    acceptance: Reported SoC tracks coulomb-counted reference within accuracy.
+    dal: B
+    refines: [REQ-0110]
+
+  - id: REQ-0114
+    title: Cell balancing
+    statement: The cell modules shall be balanced to keep inter-cell voltage spread within limits.
+    acceptance: End-of-charge voltage spread within limit over cycling.
+    dal: C
+    refines: [REQ-0110]
+
+  - id: REQ-0115
+    title: Battery thermal management
+    statement: The battery pack shall maintain cell temperature within the operating window during all phases.
+    acceptance: Thermal test holds pack temperature within window under worst-case load.
+    dal: B
+    refines: [REQ-0110]
+
+  # ---------------- Avionics ----------------
+  - id: REQ-0200
+    title: Compute energy state
+    statement: The flight computer shall compute and present the aircraft energy state (remaining endurance/range).
+    acceptance: Computed endurance matches measured discharge within tolerance.
+    dal: B
+    refines: [REQ-0003]
+
+  - id: REQ-0201
+    title: Attitude accuracy
+    statement: The air-data and attitude unit shall provide attitude within the specified accuracy.
+    acceptance: Attitude error within bound against reference during manoeuvres.
+    dal: B
+    refines: [REQ-0003]
+
+  - id: REQ-0202
+    title: Present primary flight data
+    statement: The cockpit display shall present primary flight data legibly under all lighting conditions.
+    acceptance: Readability assessment passes across lighting range.
+    dal: C
+    refines: [REQ-0003]
+
+  - id: REQ-0203
+    title: Annunciate critical faults
+    statement: The flight computer shall annunciate critical propulsion and battery faults to the pilot within the defined time.
+    acceptance: Injected faults raise the correct annunciation within time limit.
+    dal: A
+    refines: [REQ-0001]
+
+  - id: REQ-0204
+    title: Sensor fault detection
+    statement: The flight computer shall detect and isolate faulted attitude/air-data sensors.
+    acceptance: Injected sensor faults are detected and isolated without bad data use.
+    dal: B
+    refines: [REQ-0201]
+
+  - id: REQ-0205
+    title: Indicate remaining endurance
+    statement: The cockpit display shall indicate remaining endurance to the pilot.
+    acceptance: Displayed endurance matches computed value.
+    dal: C
+    refines: [REQ-0202]
+
+  # ---------------- Flight controls ----------------
+  - id: REQ-0300
+    title: Control authority
+    statement: The flight control system shall provide sufficient pitch, roll, and yaw control authority across the envelope.
+    acceptance: Flight test confirms authority margins across the envelope.
+    dal: A
+    refines: [REQ-0001]
+
+  - id: REQ-0301
+    title: Actuator response latency
+    statement: Control-surface actuators shall respond to commands within the defined latency.
+    acceptance: Step-response test meets latency requirement.
+    dal: A
+    refines: [REQ-0300]
+
+  - id: REQ-0302
+    title: Inceptor command transmission
+    statement: Pilot inceptors shall transmit pitch/roll/yaw commands to the flight control system.
+    acceptance: Command path test confirms transmission with no loss.
+    dal: B
+    refines: [REQ-0300]
+
+  - id: REQ-0303
+    title: Elevator pitch authority
+    statement: The elevator shall provide the pitch control authority allocated to it.
+    acceptance: Authority test meets pitch moment target.
+    dal: A
+    refines: [REQ-0300]
+
+  - id: REQ-0304
+    title: Aileron roll authority
+    statement: The ailerons shall provide the roll control authority allocated to them.
+    acceptance: Authority test meets roll rate target.
+    dal: B
+    refines: [REQ-0300]
+
+  - id: REQ-0305
+    title: Rudder yaw authority
+    statement: The rudder shall provide the yaw control authority allocated to it.
+    acceptance: Authority test meets yaw moment target.
+    dal: B
+    refines: [REQ-0300]
+
+  - id: REQ-0306
+    title: Actuator fail-safe on power loss
+    statement: On loss of power, control-surface actuators shall transition to a defined safe position.
+    acceptance: Power-removal test confirms safe-position transition.
+    dal: A
+    refines: [REQ-0301]
+
+  - id: REQ-0307
+    title: Inceptor artificial feel
+    statement: Pilot inceptors shall provide artificial feel proportional to command.
+    acceptance: Force-displacement curve within specification.
+    dal: C
+    refines: [REQ-0302]
+
+  # ---------------- Electrical ----------------
+  - id: REQ-0400
+    title: HV fault isolation
+    statement: The electrical system shall isolate high-voltage faults from low-voltage and pilot-accessible areas.
+    acceptance: Insulation and fault tests confirm isolation.
+    dal: A
+    refines: [REQ-0001]
+
+  - id: REQ-0401
+    title: HV bus voltage regulation
+    statement: The HV DC bus shall maintain voltage within the defined operating bounds.
+    acceptance: Load-step test keeps bus voltage within bounds.
+    dal: A
+    refines: [REQ-0400]
+
+  - id: REQ-0402
+    title: LV bus with backup
+    statement: The LV DC bus shall power avionics with a backup source on primary loss.
+    acceptance: Primary-loss test maintains avionics power from backup.
+    dal: B
+    refines: [REQ-0400]
+
+  - id: REQ-0403
+    title: Contactor HV disconnect
+    statement: Contactors shall disconnect the HV bus on fault or pilot command within the defined time.
+    acceptance: Command/fault test opens contactors within time limit.
+    dal: A
+    refines: [REQ-0400]
+
+  - id: REQ-0404
+    title: Wiring chafe protection
+    statement: Wiring shall be routed and protected against chafing and abrasion.
+    acceptance: Inspection and vibration test show no chafe-through.
+    dal: C
+    refines: [REQ-0400]
+
+  - id: REQ-0405
+    title: Ground charging safety
+    statement: The ground charging interface shall prevent unsafe energisation and enforce interlocks.
+    acceptance: Interlock test prevents charge under unsafe conditions.
+    dal: B
+    refines: [REQ-0400]
+
+  # ---------------- Airframe ----------------
+  - id: REQ-0500
+    title: Withstand limit loads
+    statement: The airframe shall withstand limit loads without detrimental permanent deformation.
+    acceptance: Static load test to limit load with no permanent deformation.
+    dal: B
+    refines: [REQ-0001]
+
+  - id: REQ-0501
+    title: Wing structural integrity
+    statement: The wing shall carry its allocated flight and ground loads.
+    acceptance: Wing load test meets allocated loads.
+    dal: C
+    refines: [REQ-0500]
+
+  - id: REQ-0502
+    title: Empennage structural integrity
+    statement: The empennage shall carry its allocated control and gust loads.
+    acceptance: Empennage load test meets allocated loads.
+    dal: C
+    refines: [REQ-0500]
+
+  - id: REQ-0503
+    title: Landing gear energy absorption
+    statement: The landing gear shall absorb landing loads at the defined sink rate.
+    acceptance: Drop test absorbs energy at design sink rate.
+    dal: C
+    refines: [REQ-0500]
+
+  - id: REQ-0504
+    title: Occupant volume
+    statement: The fuselage shall provide the defined occupant volume and egress.
+    acceptance: Mock-up review confirms volume and egress.
+    dal: D
+    refines: [REQ-0500]
