@@ -1,0 +1,39 @@
+spec_version: "0.1"
+name: propagate_dal
+title: Propagate DAL
+status: draft
+shape: closure
+description: >-
+  Propagate requirement DAL values from satisfying architecture elements down the
+  composition tree and return the strongest effective DAL per element.
+
+path:
+  - slot: satisfied_by
+    source: Requirement
+    target: ArchitectureElement
+    direction: forward
+  - slot: composed_of
+    source: ArchitectureElement
+    target: ArchitectureElement
+    direction: forward
+    min_depth: 0
+
+result:
+  class: ArchitectureElement
+  fields: [id, effective_dal]
+  cardinality: many
+  ordering: id
+
+engines:
+  rustworkx:
+    renderer: alm_graph.rustworkx:propagate_dal
+  recursive_sql:
+    renderer: alm_graph.duckpgq:propagate_dal
+
+fixtures:
+  - id: propagate-airframe
+    expected:
+      rows:
+        - {id: ARC-FUSE, effective_dal: B}
+        - {id: ARC-WING, effective_dal: B}
+        - {id: ARC-DISP, effective_dal: C}

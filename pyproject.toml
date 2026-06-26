@@ -25,14 +25,27 @@ embeddings = [
 ]
 
 [project.scripts]
-almon = "alm_ontology.cli:app"
+almon = "alm_cli.cli:app"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/alm_ontology"]
+packages = [
+    "src/alm_cli",
+    "src/alm_core",
+    "src/alm_exposure",
+    "src/alm_graph",
+    "src/alm_model",
+    "src/alm_reports",
+]
+
+[tool.hatch.build.targets.wheel.force-include]
+"config/embeddings.yaml" = "config/embeddings.yaml"
+"src/alm_graph/gqc_specs" = "alm_graph/gqc_specs"
+"src/alm_model/model" = "alm_model/model"
+"src/alm_model/generated" = "alm_model/generated"
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.5"]
@@ -40,4 +53,7 @@ dev = ["pytest>=8", "ruff>=0.5"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["src/alm_ontology/generated"]
+extend-exclude = ["src/alm_model/generated"]
+
+[tool.pytest.ini_options]
+testpaths = ["src/tests"]

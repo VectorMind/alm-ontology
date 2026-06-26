@@ -56,6 +56,9 @@ by a generated **conformance/agreement** check.
 - **Engine roles.** `recursive_sql` (native PG `WITH RECURSIVE`) doubles as the in-DB cross-check;
   `cypher_age` is the AGE renderer; `rustworkx` is also the **infra-free oracle** that runs in CI
   without Docker/Postgres.
+- **Source layout.** Runtime code is split into focused top-level packages under `src/`:
+  `alm_core`, `alm_model`, `alm_graph`, `alm_exposure`, `alm_reports`, and `alm_cli`; tests live under
+  `src/tests`. This replaces the former single `alm_ontology` package.
 
 ## Scope and non-goals
 

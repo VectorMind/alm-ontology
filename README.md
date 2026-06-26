@@ -32,7 +32,7 @@ for the full design.
 The graph engines are rebuilt from the tables; automated cross-engine checks assert
 their `impact` results agree, proving the graph is a faithful regenerable view. The
 first formal Graph Query Contract (GQC) capability is
-[`impact.gqc.yaml`](src/alm_ontology/gqc/impact.gqc.yaml).
+[`impact.gqc.yaml`](src/alm_graph/gqc_specs/impact.gqc.yaml).
 
 ## Quickstart
 

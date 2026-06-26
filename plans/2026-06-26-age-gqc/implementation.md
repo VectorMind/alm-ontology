@@ -1,44 +1,44 @@
-# Implementation — Apache AGE substrate + GQC
+﻿# Implementation â€” Apache AGE substrate + GQC
 
 ## Progress
 
-`▰▰▰▰▱ Phase 4/5` — Phase 4 (search and semantic exposures) done and proven; next is Phase 5
+`â–°â–°â–°â–°â–± Phase 4/5` â€” Phase 4 (search and semantic exposures) done and proven; next is Phase 5
 (Postgres relational parity and DuckDB retirement).
 
 ---
 
-## Done (Phase 1 — AGE substrate, no GQC)
+## Done (Phase 1 â€” AGE substrate, no GQC)
 
 A third, independent graph engine (Apache AGE / openCypher) computes `impact` over a property graph
 rebuilt from the warehouse on each call, and agrees with the recursive-CTE and rustworkx engines.
 
 ### Files changed
 
-- **`docker-compose.yml`** (new) — `apache/age:latest` container `alm-age`, healthcheck, named volume,
+- **`docker-compose.yml`** (new) â€” `apache/age:latest` container `alm-age`, healthcheck, named volume,
   conn defaults matching `graph_age._conn_params()`.
-- **`src/alm_ontology/graph_age.py`** (new) — AGE backend: env-overridable connection (`connect`,
+- **`src/alm_graph/age.py`** (new) â€” AGE backend: env-overridable connection (`connect`,
   `available`), `rebuild()` drops+recreates the `alm` graph from frames, `impact()` runs Cypher and
   returns `(sorted defect ids, "age")`. Cypher helpers handle the `cypher()` wrapper (`$cy$`
   dollar-quoting), property maps, and agtype JSON unwrapping.
-- **`src/alm_ontology/cli.py`** — `almon impact` gains `--engine age|all`; results collected into a
+- **`src/alm_cli/cli.py`** â€” `almon impact` gains `--engine age|all`; results collected into a
   dict and checked for agreement; AGE auto-skipped when unreachable under `all`.
-- **`tests/test_cross_engine.py`** — 5 parametrized AGE-vs-rustworkx agreement tests (skip if AGE
+- **`tests/test_cross_engine.py`** â€” 5 parametrized AGE-vs-rustworkx agreement tests (skip if AGE
   down) + `test_age_reports_availability`.
-- **`pyproject.toml` / `uv.lock`** — added `psycopg[binary]>=3.1` (installed `psycopg==3.3.4`).
+- **`pyproject.toml` / `uv.lock`** â€” added `psycopg[binary]>=3.1` (installed `psycopg==3.3.4`).
 
 ### Implementation facts
 
 - Vertex labels mapped from node-table names (`NODE_LABELS`) and edge labels/endpoints from
   edge-table names (`EDGE_SPECS`), using `data_io.EDGE_COLUMNS` for (source, dest) order.
 - Impact Cypher path: `(:Requirement{id})-[:satisfied_by]->(e0)-[:composed_of*0..N]->(e)<-[:affects]-(:Defect)`.
-- Graph is rebuilt from `warehouse.load_frames_from_db()` (Parquet) on **every** `impact()` call —
+- Graph is rebuilt from `warehouse.load_frames_from_db()` (Parquet) on **every** `impact()` call â€”
   fine at this scale (~39 reqs / 28 elems / 20 defects / ~145 edges).
 
 ### Decisions made during development
 
 - **Vertex properties limited** to `id` + short/enum fields; long free-text slots skipped
   (`SKIP_PROPS`) to keep the loader robust against quoting. Not needed for traversal.
-- **Labels not yet LinkML-`SchemaView`-driven** — the `gen_age` generator is deferred to Phase 2/5;
+- **Labels not yet LinkML-`SchemaView`-driven** â€” the `gen_age` generator is deferred to Phase 2/5;
   the table-name mapping is model-faithful enough for Phase 1.
 - Kept `engine="recursive"`/`duckpgq`/`both` working; added `all` (default) which now includes AGE.
 
@@ -48,14 +48,14 @@ rebuilt from the warehouse on each call, and agrees with the recursive-CTE and r
   the Parquet frames. So the `recursive_sql` engine in the agreement check **still runs on DuckDB**
   (`graph_duckpgq`), not on Postgres. The plan's "rCTE native in the same Postgres" is Phase 5 work;
   Phase 1 still yields three *independent* engines agreeing, which is the point.
-- **`apache/age:latest` is PG18**, which changed the data-dir convention → the named volume had to
+- **`apache/age:latest` is PG18**, which changed the data-dir convention â†’ the named volume had to
   mount at `/var/lib/postgresql` (not `/var/lib/postgresql/data`) or the container exits on boot.
   Corrected and commented in the compose file. (Surfaces OP / risk: pin the tag.)
 
 ### Follow-up risks
 
 - Image tag unpinned (`:latest` = PG18 today); pin `PG18_<x.y.z>` before this leaves the POC.
-- pgvector is **not** in the `apache/age` image — Phase 4 must add it (or a combined image).
+- pgvector is **not** in the `apache/age` image â€” Phase 4 must add it (or a combined image).
 - Per-call graph rebuild won't scale; revisit when data grows or for a persistent-graph mode.
 
 ### Commands / proof (Phase 1)
@@ -72,31 +72,31 @@ uv run pytest -q                           # 26 passed (incl. 5 AGE agreement ca
 uv run ruff check .                        # clean
 ```
 
-`composed_of*0..6` (zero-length path) works in AGE without a workaround — semantics match the other
+`composed_of*0..6` (zero-length path) works in AGE without a workaround â€” semantics match the other
 engines, including the empty-result case.
 
-## Done (Phase 2 — structured GQC for `impact`)
+## Done (Phase 2 â€” structured GQC for `impact`)
 
 `impact` now has a formal YAML contract and LinkML-backed validation. The contract records the closed
 shape (`fixed_multi_hop_path`), parameters, path, result, renderer entrypoints, and golden fixtures.
 
 ### Files changed
 
-- **`src/alm_ontology/gqc/impact.gqc.yaml`** (new) — first formal GQC capability.
-- **`src/alm_ontology/gqc.py`** (new) — loads GQC YAML, validates the closed shape set, validates
+- **`src/alm_graph/gqc_specs/impact.gqc.yaml`** (new) â€” first formal GQC capability.
+- **`src/alm_graph/gqc.py`** (new) â€” loads GQC YAML, validates the closed shape set, validates
   classes/slots/ranges/path continuity against LinkML, and checks renderer entrypoints import.
-- **`tests/test_gqc.py`** (new) — validates all GQC documents, asserts LinkML owns the
+- **`tests/test_gqc.py`** (new) â€” validates all GQC documents, asserts LinkML owns the
   `satisfied_by`/`satisfies` inverse, and checks `impact` fixtures across renderers.
-- **`src/alm_ontology/model/alm.yaml`** — added `satisfied_by` as the LinkML inverse of `satisfies`;
-  regenerated `src/alm_ontology/generated/`.
-- **`src/alm_ontology/graph_rustworkx.py`** — added a module-level `impact()` renderer entrypoint.
-- **`src/alm_ontology/cli.py`** — added `almon graph rebuild`, `almon graph run`, and
+- **`src/alm_model/model/alm.yaml`** â€” added `satisfied_by` as the LinkML inverse of `satisfies`;
+  regenerated `src/alm_model/generated/`.
+- **`src/alm_graph/rustworkx.py`** â€” added a module-level `impact()` renderer entrypoint.
+- **`src/alm_cli/cli.py`** â€” added `almon graph rebuild`, `almon graph run`, and
   `almon graph validate-gqc`.
-- **`src/alm_ontology/graph_age.py`** — added persisted graph lifecycle helpers and
+- **`src/alm_graph/age.py`** â€” added persisted graph lifecycle helpers and
   `ALM_AGE_REBUILD_ON_QUERY` control; default remains rebuild-on-query.
-- **`docker/age/Dockerfile` / `docker-compose.yml`** — compose now builds a project-owned image from
+- **`docker/age/Dockerfile` / `docker-compose.yml`** â€” compose now builds a project-owned image from
   the pinned AGE digest and installs `postgresql-18-pgvector`.
-- **`config/embeddings.yaml` / `pyproject.toml` / `uv.lock`** — declared the FastEmbed profile and
+- **`config/embeddings.yaml` / `pyproject.toml` / `uv.lock`** â€” declared the FastEmbed profile and
   optional `embeddings` dependency.
 
 ### Decisions accepted during Phase 2
@@ -132,17 +132,17 @@ uv run almon impact --req REQ-0110 --engine all
 # Cross-engine agreement (rustworkx, recursive-sql, age): MATCH (OK)
 ```
 
-## Done (Phase 3 — remaining GQC capability registry)
+## Done (Phase 3 â€” remaining GQC capability registry)
 
 The initial GQC registry now covers all planned Phase 3 capabilities:
 
-- **`propagate_dal.gqc.yaml`** — closure from requirements through `satisfied_by` and `composed_of`;
+- **`propagate_dal.gqc.yaml`** â€” closure from requirements through `satisfied_by` and `composed_of`;
   renderers: rustworkx + recursive SQL.
-- **`refines_closure.gqc.yaml`** — transitive requirement parent closure over `refines`; renderers:
+- **`refines_closure.gqc.yaml`** â€” transitive requirement parent closure over `refines`; renderers:
   rustworkx + recursive SQL.
-- **`coverage_gaps.gqc.yaml`** — anti-join over requirements and test cases; renderer:
+- **`coverage_gaps.gqc.yaml`** â€” anti-join over requirements and test cases; renderer:
   recursive SQL.
-- **`defects_per_element.gqc.yaml`** — count aggregation over defects affecting architecture
+- **`defects_per_element.gqc.yaml`** â€” count aggregation over defects affecting architecture
   elements; renderer: recursive SQL.
 
 Implementation facts:
@@ -174,23 +174,23 @@ uv run almon graph run impact --req REQ-0110 --no-rebuild
 # [age] impacted defects (3): DEF-0001, DEF-0004, DEF-0016
 ```
 
-## Done (Phase 4 — search and semantic exposures)
+## Done (Phase 4 â€” search and semantic exposures)
 
 Postgres now exposes the rebuilt warehouse through native full-text search and FastEmbed-backed
 pgvector semantic search.
 
 Files changed:
 
-- **`src/alm_ontology/model/alm.yaml`** — added `searchable` and `embeddable` annotations to
+- **`src/alm_model/model/alm.yaml`** â€” added `searchable` and `embeddable` annotations to
   human-text slots (`title`, `name`, `statement`, `acceptance`, `description`, `rationale`);
-  regenerated `src/alm_ontology/generated/`.
-- **`src/alm_ontology/pg_exposure.py`** (new) — rebuilds `alm_search_documents` from warehouse
+  regenerated `src/alm_model/generated/`.
+- **`src/alm_exposure/pg.py`** (new) â€” rebuilds `alm_search_documents` from warehouse
   frames using LinkML annotations, creates a generated `tsvector` column + GIN index, optionally
   creates `alm_semantic_embeddings` with `vector(384)` rows, and runs FTS/semantic queries.
-- **`src/alm_ontology/cli.py`** — added `almon rebuild-exposures`, `almon search`, and
+- **`src/alm_cli/cli.py`** â€” added `almon rebuild-exposures`, `almon search`, and
   `almon similar`.
-- **`.gitignore`** — ignores `.cache/`, where FastEmbed model files are cached.
-- **`tests/test_pg_exposure.py`** (new) — covers annotation-derived records, Postgres FTS, and
+- **`.gitignore`** â€” ignores `.cache/`, where FastEmbed model files are cached.
+- **`src/tests/test_pg_exposure.py`** (new) â€” covers annotation-derived records, Postgres FTS, and
   pgvector similarity with a fake embedder so tests do not download model weights.
 
 Implementation facts:
@@ -224,8 +224,28 @@ uv run almon graph validate-gqc
 # all five capabilities ok
 ```
 
+## Source Layout Restructure
+
+After Phase 4, the former single `src/alm_ontology/` package was split into focused top-level
+packages:
+
+- **`src/alm_core/`** — shared paths, data loading, warehouse build/readback, and analytical SQL
+  query helpers.
+- **`src/alm_model/`** — LinkML model, model generation, and generated artifacts.
+- **`src/alm_graph/`** — AGE, recursive SQL/DuckPGQ compatibility, rustworkx, GQC validator, and GQC
+  YAML specs.
+- **`src/alm_exposure/`** — Postgres FTS/pgvector exposure rebuild and query code.
+- **`src/alm_reports/`** — report, chart, and local report serving code.
+- **`src/alm_cli/`** — Typer CLI entry point.
+- **`src/tests/`** — test suite, now colocated under `src`.
+
+`pyproject.toml` now points `almon` at `alm_cli.cli:app`, packages each top-level source package
+explicitly, excludes `src/alm_model/generated` from Ruff, and sets pytest `testpaths = ["src/tests"]`.
+`handoff.md` was deleted by maintainer request; ongoing operational notes now live in this
+implementation log.
+
 ## Remaining (Phase 5)
 
-- **Phase 5** — create relational tables in PG from LinkML; move `recursive_sql` onto PG; collapse the
+- **Phase 5** â€” create relational tables in PG from LinkML; move `recursive_sql` onto PG; collapse the
   two-schema split; repoint reports; retire DuckDB-as-substrate (keep Parquet only as export/interchange
   if useful).

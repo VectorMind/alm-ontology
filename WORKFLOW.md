@@ -13,9 +13,9 @@ nothing is a store of record except the authored inputs. Hold this line when add
 
 The durable contract lives in the model, not in prose:
 
-- `src/alm_ontology/model/alm.yaml` — the LinkML spine. Entity types, controlled vocabularies, and
+- `src/alm_model/model/alm.yaml` — the LinkML spine. Entity types, controlled vocabularies, and
   permitted relationships. Edit here first when the domain changes, then regenerate.
-- `src/alm_ontology/generated/` — Pydantic types, SQL DDL, docs **generated** from the model
+- `src/alm_model/generated/` — Pydantic types, SQL DDL, docs **generated** from the model
   (`almon model gen`). Committed for reviewability but regenerable; never hand-edit.
 - `plans/concept-handover/` — the original handover, POC proposal, and research reports. Durable
   reference for *why* the architecture is shaped as it is. Read-only history; do not rewrite.
@@ -35,7 +35,6 @@ plans/YYYY-MM-DD-<slug>/
   survey.md            # only when the maintainer explicitly requests one
   plan.md
   implementation.md    # created only after implementation work has happened
-  handoff.md           # uncaptured operational/in-flight detail for the next person/agent
   test.md              # proof of behavior (may be folded into implementation.md for small packets)
 ```
 
@@ -81,12 +80,11 @@ Keep the bar current on every change. The rest of the file is the running trace:
 implementation facts, decisions made during development, deviations from the plan, follow-up risks,
 and important commands/migrations. Describe what happened; do not restate the whole plan.
 
-## Handoff
+## Operational notes
 
-`handoff.md` captures the operational and in-flight detail that `plan.md` glosses and that the next
-person/agent would otherwise rediscover: working state (branch, running containers), how to run it
-locally (env vars, commands), gotchas already hit, nuances the plan leaves implicit, and the concrete
-next action. Create it when a packet is handed over or paused mid-flight.
+Keep operational and in-flight detail in `implementation.md`: working state, running containers, how
+to run locally, env vars, gotchas already hit, nuances the plan leaves implicit, and the concrete
+next action. Do not create or maintain `handoff.md`.
 
 ## Test proof
 
