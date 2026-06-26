@@ -31,12 +31,15 @@
 -- # Class: Requirement_refines
 --     * Slot: Requirement_id Description: Autocreated FK slot
 --     * Slot: refines_id Description: This requirement refines (decomposes) the referenced parent(s); transitive.
+-- # Class: Requirement_satisfied_by
+--     * Slot: Requirement_id Description: Autocreated FK slot
+--     * Slot: satisfied_by_id Description: Inverse allocation — this requirement is satisfied by the referenced architecture element(s). This relation is derived from ArchitectureElement `satisfies` in the authored data.
 -- # Class: ArchitectureElement_composed_of
 --     * Slot: ArchitectureElement_id Description: Autocreated FK slot
 --     * Slot: composed_of_id Description: This element is composed of the referenced sub-element(s); transitive.
 -- # Class: ArchitectureElement_satisfies
 --     * Slot: ArchitectureElement_id Description: Autocreated FK slot
---     * Slot: satisfies_id Description: Allocation — this architecture element is allocated the referenced requirement(s) (i.e. requirement allocated_to element).
+--     * Slot: satisfies_id Description: Allocation — this architecture element is allocated the referenced requirement(s) (i.e. the requirement is satisfied by this element).
 -- # Class: Defect_affects
 --     * Slot: Defect_id Description: Autocreated FK slot
 --     * Slot: affects_id Description: Architecture element(s) where this defect manifests.
@@ -109,6 +112,16 @@ CREATE TABLE "Requirement_refines" (
 CREATE INDEX "ix_Requirement_refines_refines_id" ON "Requirement_refines" (refines_id);
 CREATE INDEX "ix_Requirement_refines_Requirement_id" ON "Requirement_refines" ("Requirement_id");
 
+CREATE TABLE "Requirement_satisfied_by" (
+	"Requirement_id" TEXT,
+	satisfied_by_id TEXT,
+	PRIMARY KEY ("Requirement_id", satisfied_by_id),
+	FOREIGN KEY("Requirement_id") REFERENCES "Requirement" (id),
+	FOREIGN KEY(satisfied_by_id) REFERENCES "ArchitectureElement" (id)
+);
+CREATE INDEX "ix_Requirement_satisfied_by_satisfied_by_id" ON "Requirement_satisfied_by" (satisfied_by_id);
+CREATE INDEX "ix_Requirement_satisfied_by_Requirement_id" ON "Requirement_satisfied_by" ("Requirement_id");
+
 CREATE TABLE "ArchitectureElement_composed_of" (
 	"ArchitectureElement_id" TEXT,
 	composed_of_id TEXT,
@@ -136,8 +149,8 @@ CREATE TABLE "Defect_affects" (
 	FOREIGN KEY("Defect_id") REFERENCES "Defect" (id),
 	FOREIGN KEY(affects_id) REFERENCES "ArchitectureElement" (id)
 );
-CREATE INDEX "ix_Defect_affects_affects_id" ON "Defect_affects" (affects_id);
 CREATE INDEX "ix_Defect_affects_Defect_id" ON "Defect_affects" ("Defect_id");
+CREATE INDEX "ix_Defect_affects_affects_id" ON "Defect_affects" (affects_id);
 
 CREATE TABLE "Defect_violates" (
 	"Defect_id" TEXT,
@@ -146,5 +159,5 @@ CREATE TABLE "Defect_violates" (
 	FOREIGN KEY("Defect_id") REFERENCES "Defect" (id),
 	FOREIGN KEY(violates_id) REFERENCES "Requirement" (id)
 );
-CREATE INDEX "ix_Defect_violates_Defect_id" ON "Defect_violates" ("Defect_id");
 CREATE INDEX "ix_Defect_violates_violates_id" ON "Defect_violates" (violates_id);
+CREATE INDEX "ix_Defect_violates_Defect_id" ON "Defect_violates" ("Defect_id");

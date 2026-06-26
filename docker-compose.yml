@@ -1,0 +1,29 @@
+# Apache AGE substrate for the SQL/Cypher graph exposure.
+# Plan: plans/2026-06-26-age-gqc/ (Phase 1). Self-hosted, Docker-only (OP-001 resolved). The image is
+# a stock Postgres with the `age` extension preloaded (~Postgres-sized). Connection defaults match
+# graph_age._conn_params().
+services:
+  age:
+    build:
+      context: .
+      dockerfile: docker/age/Dockerfile
+    image: alm-ontology-age:pg18-age-pgvector
+    container_name: alm-age
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: alm
+    ports:
+      - "5432:5432"
+    volumes:
+      # PG18+ images (apache/age:latest) store data under a major-version subdir, so the mount
+      # must be at /var/lib/postgresql (not /var/lib/postgresql/data).
+      - alm_age_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d alm"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  alm_age_data:

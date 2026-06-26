@@ -56,15 +56,20 @@ class AlmGraph:
         for _, row in frames["edge_composed_of"].iterrows():
             self._children[row["parent"]].append(row["child"])
 
-        self._alloc_req_to_elems: dict[str, list[str]] = {}
-        self._alloc_elem_to_reqs: dict[str, list[str]] = {}
-        for _, row in frames["edge_allocated_to"].iterrows():
-            self._alloc_req_to_elems.setdefault(row["req"], []).append(row["element"])
-            self._alloc_elem_to_reqs.setdefault(row["element"], []).append(row["req"])
+        self._satisfied_req_to_elems: dict[str, list[str]] = {}
+        self._satisfied_elem_to_reqs: dict[str, list[str]] = {}
+        for _, row in frames["edge_satisfied_by"].iterrows():
+            self._satisfied_req_to_elems.setdefault(row["req"], []).append(row["element"])
+            self._satisfied_elem_to_reqs.setdefault(row["element"], []).append(row["req"])
 
         self._affects: dict[str, list[str]] = {}
         for _, row in frames["edge_affects"].iterrows():
             self._affects.setdefault(row["element"], []).append(row["defect"])
+
+        self._refines_parent: dict[str, list[str]] = {}
+        edge_refines = frames.get("edge_refines", pd.DataFrame(columns=["src", "dst"]))
+        for _, row in edge_refines.iterrows():
+            self._refines_parent.setdefault(row["src"], []).append(row["dst"])
 
     # --- traversal -------------------------------------------------------
     def descendants(self, element: str, max_depth: int | None = None) -> dict[str, int]:
@@ -90,7 +95,7 @@ class AlmGraph:
         that could lower DAL across redundancy is intentionally NOT modelled).
         """
         effective: dict[str, str | None] = {e: None for e in self.element_ids}
-        for req, elems in self._alloc_req_to_elems.items():
+        for req, elems in self._satisfied_req_to_elems.items():
             dal = self.req_dal.get(req)
             for elem in elems:
                 for target in self.descendants(elem):  # elem + all descendants
@@ -102,8 +107,8 @@ class AlmGraph:
         defects affecting any of those elements."""
         result = ImpactResult(requirement=requirement, max_depth=max_depth)
         reachable: dict[str, int] = {}
-        for elem in self._alloc_req_to_elems.get(requirement, []):
-            result.edges.append((requirement, elem, "allocated_to"))
+        for elem in self._satisfied_req_to_elems.get(requirement, []):
+            result.edges.append((requirement, elem, "satisfied_by"))
             for e, depth in self.descendants(elem, max_depth).items():
                 reachable[e] = min(depth, reachable.get(e, depth))
 
@@ -123,10 +128,52 @@ class AlmGraph:
         result.defects = sorted(defects)
         return result
 
+    def refines_closure(self, requirement: str, max_depth: int = 20) -> dict[str, int]:
+        """Transitive parent requirements reached through ``refines``."""
+        seen: dict[str, int] = {}
+        q: deque[tuple[str, int]] = deque((parent, 1) for parent in self._refines_parent.get(requirement, []))
+        while q:
+            cur, depth = q.popleft()
+            if cur in seen and seen[cur] <= depth:
+                continue
+            seen[cur] = depth
+            if depth >= max_depth:
+                continue
+            for parent in self._refines_parent.get(cur, []):
+                q.append((parent, depth + 1))
+        return seen
+
 
 def load() -> AlmGraph:
     """Build the graph from the current warehouse."""
     return AlmGraph(warehouse.load_frames_from_db())
+
+
+def impact(requirement: str, max_depth: int = 6) -> tuple[list[str], str]:
+    """Compute impacted defects through the rustworkx graph view."""
+    return load().impact(requirement, max_depth=max_depth).defects, "rustworkx"
+
+
+def propagate_dal() -> tuple[list[dict[str, str | None]], str]:
+    """Effective DAL per architecture element through the rustworkx graph view."""
+    table = propagate_table().sort_values("id")
+    rows = [
+        {
+            "id": row["id"],
+            "effective_dal": None if pd.isna(row["effective_dal"]) else row["effective_dal"],
+        }
+        for _, row in table.iterrows()
+    ]
+    return rows, "rustworkx"
+
+
+def refines_closure(requirement: str, max_depth: int = 20) -> tuple[list[dict[str, int | str]], str]:
+    """Requirement ancestors reached through transitive ``refines``."""
+    closure = load().refines_closure(requirement, max_depth=max_depth)
+    return [
+        {"id": req, "depth": depth}
+        for req, depth in sorted(closure.items(), key=lambda item: (item[1], item[0]))
+    ], "rustworkx"
 
 
 def propagate_table() -> pd.DataFrame:
@@ -137,7 +184,7 @@ def propagate_table() -> pd.DataFrame:
     elems = g.frames["architecture_elements"]
     for _, row in elems.iterrows():
         eid = row["id"]
-        allocated = sorted(g._alloc_elem_to_reqs.get(eid, []))
+        allocated = sorted(g._satisfied_elem_to_reqs.get(eid, []))
         declared = None
         for req in allocated:
             declared = _stronger(declared, g.req_dal.get(req))

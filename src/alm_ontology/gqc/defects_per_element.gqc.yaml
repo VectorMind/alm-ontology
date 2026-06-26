@@ -1,0 +1,38 @@
+spec_version: "0.1"
+name: defects_per_element
+title: Defects per element
+status: draft
+shape: aggregation_count
+description: Count directly affecting defects per architecture element.
+
+path:
+  - slot: affects
+    source: Defect
+    target: ArchitectureElement
+    direction: reverse
+
+result:
+  group_by:
+    class: ArchitectureElement
+    fields: [id, name]
+  aggregate:
+    function: count
+    class: Defect
+    field: id
+    as: n_defects
+  cardinality: many
+  ordering: [n_defects desc, id]
+
+engines:
+  recursive_sql:
+    renderer: alm_ontology.queries:defect_counts_by_element
+
+fixtures:
+  - id: defects-top-3
+    parameters:
+      top: 3
+    expected:
+      rows:
+        - {id: ARC-CONT, name: Contactors & Wiring, n_defects: 3}
+        - {id: ARC-ACT, name: Control Surface Actuators, n_defects: 2}
+        - {id: ARC-CELL, name: Cell Modules, n_defects: 2}

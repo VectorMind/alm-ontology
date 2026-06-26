@@ -117,6 +117,7 @@ URI: [alm:ArchitectureElement](https://vectormind.example/alm-ontology/Architect
 
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
+| [Requirement](Requirement.md) | [satisfied_by](satisfied_by.md) | range | [ArchitectureElement](ArchitectureElement.md) |
 | [ArchitectureElement](ArchitectureElement.md) | [composed_of](composed_of.md) | range | [ArchitectureElement](ArchitectureElement.md) |
 | [Defect](Defect.md) | [affects](affects.md) | range | [ArchitectureElement](ArchitectureElement.md) |
 | [Dataset](Dataset.md) | [architecture_elements](architecture_elements.md) | range | [ArchitectureElement](ArchitectureElement.md) |
@@ -246,12 +247,13 @@ attributes:
   satisfies:
     name: satisfies
     description: Allocation — this architecture element is allocated the referenced
-      requirement(s) (i.e. requirement allocated_to element).
+      requirement(s) (i.e. the requirement is satisfied by this element).
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000
     owner: ArchitectureElement
     domain_of:
     - ArchitectureElement
+    inverse: satisfied_by
     range: Requirement
     multivalued: true
 

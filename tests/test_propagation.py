@@ -10,7 +10,7 @@ from alm_ontology.graph_rustworkx import AlmGraph
 def _mini_frames() -> dict[str, pd.DataFrame]:
     """A tiny composition: E1 -composed_of-> E2 -composed_of-> E3.
 
-    R1(DAL A) allocated to E1; R3(DAL C) allocated to E3; D1 affects E3.
+    R1(DAL A) is satisfied by E1; R3(DAL C) is satisfied by E3; D1 affects E3.
     """
     return {
         "requirements": pd.DataFrame(
@@ -22,7 +22,7 @@ def _mini_frames() -> dict[str, pd.DataFrame]:
         "edge_composed_of": pd.DataFrame(
             [{"parent": "E1", "child": "E2"}, {"parent": "E2", "child": "E3"}]
         ),
-        "edge_allocated_to": pd.DataFrame(
+        "edge_satisfied_by": pd.DataFrame(
             [{"req": "R1", "element": "E1"}, {"req": "R3", "element": "E3"}]
         ),
         "edge_affects": pd.DataFrame([{"defect": "D1", "element": "E3"}]),
@@ -40,7 +40,7 @@ def test_propagation_flows_strongest_dal_downward():
 def test_propagation_does_not_flow_upward():
     frames = _mini_frames()
     # Allocate a strong DAL only to the LEAF; it must not raise the parents.
-    frames["edge_allocated_to"] = pd.DataFrame([{"req": "R1", "element": "E3"}])
+    frames["edge_satisfied_by"] = pd.DataFrame([{"req": "R1", "element": "E3"}])
     g = AlmGraph(frames)
     eff = g.propagate_dal()
     assert eff["E3"] == "A"

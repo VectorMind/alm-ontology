@@ -13,6 +13,8 @@ app = typer.Typer(
 
 model_app = typer.Typer(help="Layer 0 - the LinkML model and its generated artifacts.")
 app.add_typer(model_app, name="model")
+graph_app = typer.Typer(help="AGE graph lifecycle and GQC-backed graph runs.")
+app.add_typer(graph_app, name="graph")
 
 
 @app.callback()
@@ -38,6 +40,55 @@ def model_gen() -> None:
     for name, path in written.items():
         typer.echo(f"  {name:10s} -> {path}")
     typer.secho("Model artifacts regenerated.", fg=typer.colors.GREEN)
+
+
+@graph_app.command("rebuild")
+def graph_rebuild() -> None:
+    """Rebuild and persist the AGE graph from the current warehouse tables."""
+    from alm_ontology import graph_age
+
+    counts = graph_age.rebuild_from_warehouse()
+    typer.secho("AGE graph rebuilt and persisted -> graph 'alm'", fg=typer.colors.GREEN)
+    for name, n in counts.items():
+        typer.echo(f"  {name:22s} {n:5d} rows")
+
+
+@graph_app.command("run")
+def graph_run(
+    capability: str = typer.Argument("impact", help="GQC capability to run."),
+    req: str = typer.Option(..., help="Requirement id for impact."),
+    max_depth: int = typer.Option(6, help="Max composition depth to traverse."),
+    rebuild: bool = typer.Option(
+        True,
+        "--rebuild/--no-rebuild",
+        help="Rebuild the persisted AGE graph before running the capability.",
+    ),
+) -> None:
+    """Run a GQC graph capability against the AGE graph."""
+    from alm_ontology import graph_age
+
+    if capability != "impact":
+        typer.secho(f"Unsupported GQC capability: {capability}", fg=typer.colors.RED)
+        raise typer.Exit(code=2)
+    defects, backend = graph_age.impact(req, max_depth=max_depth, rebuild_graph=rebuild)
+    typer.echo(f"[{backend}] impacted defects ({len(defects)}): {', '.join(defects) or '(none)'}")
+
+
+@graph_app.command("validate-gqc")
+def graph_validate_gqc() -> None:
+    """Validate checked-in GQC YAML against LinkML."""
+    from alm_ontology import gqc
+
+    results = gqc.validate_all()
+    errors = [error for result in results for error in result.errors]
+    if errors:
+        typer.secho("GQC validation FAILED:", fg=typer.colors.RED)
+        for error in errors:
+            typer.echo(f"  - {error}")
+        raise typer.Exit(code=1)
+    for result in results:
+        typer.echo(f"  {result.capability}: ok")
+    typer.secho("GQC validation passed.", fg=typer.colors.GREEN)
 
 
 @app.command()
@@ -105,31 +156,46 @@ def impact(
     req: str = typer.Option(..., help="Requirement id, e.g. REQ-0110."),
     max_depth: int = typer.Option(6, help="Max composition depth to traverse."),
     engine: str = typer.Option(
-        "both", help="rustworkx | duckpgq | recursive | both (cross-engine check)."
+        "all",
+        help="rustworkx | duckpgq | recursive | age | both | all (cross-engine check).",
     ),
 ) -> None:
     """Trace a requirement -> architecture -> defects (variable-length path)."""
-    from alm_ontology import graph_duckpgq, graph_rustworkx
+    from alm_ontology import graph_age, graph_duckpgq, graph_rustworkx
 
-    if engine in ("rustworkx", "both"):
-        g = graph_rustworkx.load()
-        rx_res = g.impact(req, max_depth=max_depth)
+    multi = engine in ("both", "all")
+    results: dict[str, list[str]] = {}
+
+    if engine in ("rustworkx", "both", "all"):
+        rx_res = graph_rustworkx.load().impact(req, max_depth=max_depth)
+        results["rustworkx"] = rx_res.defects
         typer.echo(f"[rustworkx] elements reached: {len(rx_res.elements)}")
         typer.echo(f"[rustworkx] impacted defects ({len(rx_res.defects)}): {', '.join(rx_res.defects) or '(none)'}")
 
-    if engine in ("duckpgq", "recursive", "both"):
-        sql_engine = "auto" if engine in ("duckpgq", "both") else "recursive"
+    if engine in ("duckpgq", "recursive", "both", "all"):
+        sql_engine = "recursive" if engine == "recursive" else "auto"
         sql_defects, backend = graph_duckpgq.impact(req, max_depth=max_depth, engine=sql_engine)
+        results[backend] = sql_defects
         typer.echo(f"[{backend}] impacted defects ({len(sql_defects)}): {', '.join(sql_defects) or '(none)'}")
 
-    if engine == "both":
-        agree = rx_res.defects == sql_defects
-        if agree:
-            typer.secho("Cross-engine agreement: MATCH (OK)", fg=typer.colors.GREEN)
+    # AGE only when explicitly asked, or when reachable under a multi-engine run.
+    if engine == "age" or (engine == "all" and graph_age.available()):
+        age_defects, backend = graph_age.impact(req, max_depth=max_depth)
+        results[backend] = age_defects
+        typer.echo(f"[{backend}] impacted defects ({len(age_defects)}): {', '.join(age_defects) or '(none)'}")
+    elif engine in ("age", "all"):
+        typer.secho("[age] skipped (no Apache AGE instance reachable)", fg=typer.colors.YELLOW)
+
+    if multi and len(results) > 1:
+        baseline = next(iter(results.values()))
+        if all(defects == baseline for defects in results.values()):
+            typer.secho(
+                f"Cross-engine agreement ({', '.join(results)}): MATCH (OK)", fg=typer.colors.GREEN
+            )
         else:
             typer.secho("Cross-engine agreement: MISMATCH", fg=typer.colors.RED)
-            typer.echo(f"  rustworkx only: {set(rx_res.defects) - set(sql_defects)}")
-            typer.echo(f"  sql only:       {set(sql_defects) - set(rx_res.defects)}")
+            for name, defects in results.items():
+                typer.echo(f"  {name}: {', '.join(defects) or '(none)'}")
             raise typer.Exit(code=1)
 
 

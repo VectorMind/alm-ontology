@@ -38,6 +38,7 @@ Name: alm-ontology
 | [rationale](rationale.md) | Why this exists |
 | [refines](refines.md) | This requirement refines (decomposes) the referenced parent(s); transitive |
 | [requirements](requirements.md) |  |
+| [satisfied_by](satisfied_by.md) | Inverse allocation — this requirement is satisfied by the referenced architec... |
 | [satisfies](satisfies.md) | Allocation — this architecture element is allocated the referenced requiremen... |
 | [severity](severity.md) |  |
 | [statement](statement.md) | The binding specification text — what shall be achieved |

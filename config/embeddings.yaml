@@ -1,0 +1,13 @@
+spec_version: "0.1"
+name: alm_ontology_embeddings
+status: draft
+description: Local embedding profiles for the future pgvector semantic exposure.
+
+profiles:
+  - name: fastembed_bge_small_en_v1_5
+    provider: fastembed
+    model_name: BAAI/bge-small-en-v1.5
+    dimension: 384
+    speed_tier: fast
+    benchmark_rating: strong_small
+    description: Default local CPU embedding profile, aligned with evidence-engine.

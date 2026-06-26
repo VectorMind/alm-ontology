@@ -163,6 +163,7 @@ class Requirement(ConfiguredBaseModel):
     rationale: Optional[str] = Field(default=None, description="""Why this exists.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
     dal: Optional[DALEnum] = Field(default=None, description="""Design Assurance Level of a requirement.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
     refines: Optional[list[str]] = Field(default=None, description="""This requirement refines (decomposes) the referenced parent(s); transitive.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
+    satisfied_by: Optional[list[str]] = Field(default=None, description="""Inverse allocation — this requirement is satisfied by the referenced architecture element(s). This relation is derived from ArchitectureElement `satisfies` in the authored data.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement'], 'inverse': 'satisfies'} })
 
 
 class ArchitectureElement(ConfiguredBaseModel):
@@ -176,7 +177,7 @@ class ArchitectureElement(ConfiguredBaseModel):
     kind: Optional[ElementKindEnum] = Field(default=None, description="""Coarse kind of an architecture element.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement']} })
     description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
     composed_of: Optional[list[str]] = Field(default=None, description="""This element is composed of the referenced sub-element(s); transitive.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement']} })
-    satisfies: Optional[list[str]] = Field(default=None, description="""Allocation — this architecture element is allocated the referenced requirement(s) (i.e. requirement allocated_to element).""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement']} })
+    satisfies: Optional[list[str]] = Field(default=None, description="""Allocation — this architecture element is allocated the referenced requirement(s) (i.e. the requirement is satisfied by this element).""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement'], 'inverse': 'satisfied_by'} })
 
 
 class TestCase(ConfiguredBaseModel):

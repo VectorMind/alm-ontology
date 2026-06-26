@@ -25,21 +25,14 @@ for the full design.
 | Layer | Realization |
 |---|---|
 | **Model (spine)** | A single LinkML schema → generated Pydantic types, SQL DDL, docs |
-| **Substrate** | Committed authored YAML → built SQLite + Parquet (`data/warehouse/`) |
-| **Portable graph contract** | SQL-side graph over the tables (DuckPGQ `MATCH`, else recursive CTE) |
+| **Substrate** | Committed authored YAML → built warehouse tables (`data/warehouse/`) |
+| **Graph/query contract** | Apache AGE/openCypher + recursive SQL + rustworkx, governed by GQC |
 | **In-memory inference** | rustworkx — auditable DAL propagation & traceability paths |
 
-The SQL-side engine and rustworkx are both rebuilt from the tables on every run; an
-automated cross-engine check (`tests/test_cross_engine.py`) asserts their `impact`
-results agree, proving the graph is a faithful regenerable view.
-
-> **DuckPGQ note.** DuckPGQ is the intended SQL/PGQ portable-graph contract and the
-> `MATCH` path is wired in [`graph_duckpgq.py`](src/alm_ontology/graph_duckpgq.py). At
-> the time of writing it has **no build for DuckDB ≥ 1.5 on Windows** (the community
-> extension 404s), so the SQL-side engine transparently falls back to an equivalent
-> **recursive CTE** — which is genuinely independent of rustworkx, so the cross-engine
-> agreement check stays meaningful. It auto-activates DuckPGQ where the extension loads
-> (e.g. Linux/CI, or a future Windows build).
+The graph engines are rebuilt from the tables; automated cross-engine checks assert
+their `impact` results agree, proving the graph is a faithful regenerable view. The
+first formal Graph Query Contract (GQC) capability is
+[`impact.gqc.yaml`](src/alm_ontology/gqc/impact.gqc.yaml).
 
 ## Quickstart
 
@@ -47,9 +40,12 @@ results agree, proving the graph is a faithful regenerable view.
 uv sync                          # create .venv and install
 uv run almon model gen           # generate Pydantic types, SQL DDL, docs from the LinkML model
 uv run almon build               # load data/ -> data/warehouse/ (SQLite + Parquet)
+docker compose up -d --build     # optional: start Postgres+AGE+pgvector
+uv run almon graph rebuild       # optional: persist the AGE graph
 uv run almon validate            # structural + cross-entity completeness checks
 uv run almon coverage --min-dal A
-uv run almon impact --req REQ-0007 --engine both
+uv run almon impact --req REQ-0007 --engine all
+uv run almon graph run impact --req REQ-0007 --no-rebuild
 uv run almon propagate
 uv run almon report --topic full # -> .report/<date>/full-<HHMM>.{md,html}
 uv run almon serve               # browse reports at http://localhost:8000

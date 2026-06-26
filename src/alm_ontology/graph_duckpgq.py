@@ -13,6 +13,7 @@ backends:
 
 from __future__ import annotations
 
+from . import queries
 from . import warehouse
 
 PROPERTY_GRAPH_DDL = """
@@ -23,10 +24,10 @@ VERTEX TABLES (
     defects               KEY (id)
 )
 EDGE TABLES (
-    edge_allocated_to KEY (req, element)
+    edge_satisfied_by KEY (req, element)
         SOURCE KEY (req) REFERENCES requirements (id)
         DESTINATION KEY (element) REFERENCES architecture_elements (id)
-        LABEL allocated_to,
+        LABEL satisfied_by,
     edge_composed_of KEY (parent, child)
         SOURCE KEY (parent) REFERENCES architecture_elements (id)
         DESTINATION KEY (child) REFERENCES architecture_elements (id)
@@ -43,7 +44,7 @@ def _impact_recursive(con, requirement: str, max_depth: int) -> list[str]:
     """Variable-length impact via a recursive CTE over composed_of."""
     sql = """
     WITH RECURSIVE reach(elem, depth) AS (
-        SELECT element, 0 FROM edge_allocated_to WHERE req = ?
+        SELECT element, 0 FROM edge_satisfied_by WHERE req = ?
         UNION
         SELECT c.child, r.depth + 1
         FROM reach r
@@ -62,14 +63,14 @@ def _impact_recursive(con, requirement: str, max_depth: int) -> list[str]:
 def _impact_duckpgq(con, requirement: str, max_depth: int) -> list[str]:
     """Variable-length impact via SQL/PGQ MATCH (DuckPGQ).
 
-    Only called when the extension has loaded. Path: requirement -allocated_to-> e0
+    Only called when the extension has loaded. Path: requirement -satisfied_by-> e0
     -composed_of*{0,max}-> e <-affects- defect.
     """
     con.execute(PROPERTY_GRAPH_DDL)
     sql = f"""
     SELECT DISTINCT defect FROM GRAPH_TABLE (alm
         MATCH
-            (r:requirements WHERE r.id = ?)-[:allocated_to]->(e0:architecture_elements)
+            (r:requirements WHERE r.id = ?)-[:satisfied_by]->(e0:architecture_elements)
             -[:composed_of]->{{0,{int(max_depth)}}}(e:architecture_elements)
             <-[:affects]-(d:defects)
         COLUMNS (d.id AS defect)
@@ -86,6 +87,66 @@ def duckpgq_available() -> bool:
         return warehouse.try_load_duckpgq(con)
     finally:
         con.close()
+
+
+def refines_closure(requirement: str, max_depth: int = 20) -> tuple[list[dict[str, int | str]], str]:
+    """Requirement ancestors reached through transitive ``refines`` using recursive SQL."""
+    con = warehouse.connect("parquet")
+    try:
+        sql = """
+        WITH RECURSIVE closure(req, depth) AS (
+            SELECT dst, 1 FROM edge_refines WHERE src = ?
+            UNION
+            SELECT e.dst, c.depth + 1
+            FROM closure c
+            JOIN edge_refines e ON e.src = c.req
+            WHERE c.depth < ?
+        )
+        SELECT req AS id, MIN(depth) AS depth
+        FROM closure
+        GROUP BY req
+        ORDER BY depth, id
+        """
+        rows = con.execute(sql, [requirement, max_depth]).fetchall()
+        return [{"id": row[0], "depth": int(row[1])} for row in rows], "recursive-sql"
+    finally:
+        con.close()
+
+
+def propagate_dal() -> tuple[list[dict[str, str | None]], str]:
+    """Effective DAL per architecture element using recursive SQL traversal."""
+    con = warehouse.connect("parquet")
+    try:
+        sql = """
+        WITH RECURSIVE reach(element, dal) AS (
+            SELECT s.element, r.dal
+            FROM edge_satisfied_by s
+            JOIN requirements r ON r.id = s.req
+            UNION
+            SELECT c.child, reach.dal
+            FROM reach
+            JOIN edge_composed_of c ON c.parent = reach.element
+        )
+        SELECT a.id, reach.dal
+        FROM architecture_elements a
+        LEFT JOIN reach ON reach.element = a.id
+        ORDER BY a.id
+        """
+        rows = con.execute(sql).fetchall()
+    finally:
+        con.close()
+
+    effective: dict[str, str | None] = {}
+    for element, dal in rows:
+        current = effective.get(element)
+        if current is None or queries.dal_severity(dal) > queries.dal_severity(current):
+            effective[element] = dal
+        else:
+            effective.setdefault(element, current)
+    return [
+        {"id": element, "effective_dal": effective[element]}
+        for element in sorted(effective)
+    ], "recursive-sql"
 
 
 def impact(requirement: str, max_depth: int = 6, engine: str = "auto") -> tuple[list[str], str]:
@@ -114,3 +175,8 @@ def impact(requirement: str, max_depth: int = 6, engine: str = "auto") -> tuple[
         return _impact_recursive(con, requirement, max_depth), "recursive-sql"
     finally:
         con.close()
+
+
+def impact_recursive(requirement: str, max_depth: int = 6) -> tuple[list[str], str]:
+    """GQC renderer entrypoint for the recursive SQL impact implementation."""
+    return impact(requirement=requirement, max_depth=max_depth, engine="recursive")

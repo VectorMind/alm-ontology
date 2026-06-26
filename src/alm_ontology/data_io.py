@@ -26,7 +26,7 @@ NODE_COLUMNS: dict[str, list[str]] = {
 EDGE_COLUMNS: dict[str, list[str]] = {
     "edge_refines": ["src", "dst"],          # requirement refines requirement
     "edge_composed_of": ["parent", "child"],  # element composed_of element
-    "edge_allocated_to": ["req", "element"],  # requirement allocated_to element
+    "edge_satisfied_by": ["req", "element"],  # requirement satisfied_by element
     "edge_affects": ["defect", "element"],    # defect affects element
     "edge_violates": ["defect", "req"],       # defect violates requirement
 }
@@ -126,7 +126,7 @@ def to_frames(raw: dict[str, list[dict]]) -> dict[str, pd.DataFrame]:
     composed = [
         (e["id"], c) for e in raw["architecture_elements"] for c in (e.get("composed_of") or [])
     ]
-    allocated = [
+    satisfied_by = [
         (req, e["id"]) for e in raw["architecture_elements"] for req in (e.get("satisfies") or [])
     ]
     affects = [(d["id"], el) for d in raw["defects"] for el in (d.get("affects") or [])]
@@ -134,7 +134,9 @@ def to_frames(raw: dict[str, list[dict]]) -> dict[str, pd.DataFrame]:
 
     frames["edge_refines"] = pd.DataFrame(refines, columns=EDGE_COLUMNS["edge_refines"])
     frames["edge_composed_of"] = pd.DataFrame(composed, columns=EDGE_COLUMNS["edge_composed_of"])
-    frames["edge_allocated_to"] = pd.DataFrame(allocated, columns=EDGE_COLUMNS["edge_allocated_to"])
+    frames["edge_satisfied_by"] = pd.DataFrame(
+        satisfied_by, columns=EDGE_COLUMNS["edge_satisfied_by"]
+    )
     frames["edge_affects"] = pd.DataFrame(affects, columns=EDGE_COLUMNS["edge_affects"])
     frames["edge_violates"] = pd.DataFrame(violates, columns=EDGE_COLUMNS["edge_violates"])
     return frames

@@ -79,6 +79,17 @@ URI: [alm:Requirement](https://vectormind.example/alm-ontology/Requirement)
     
 
         
+      Requirement : satisfied_by
+        
+          
+    
+        
+        
+        Requirement --> "*" ArchitectureElement : satisfied_by
+        click ArchitectureElement href "../ArchitectureElement/"
+    
+
+        
       Requirement : statement
         
           
@@ -120,6 +131,7 @@ URI: [alm:Requirement](https://vectormind.example/alm-ontology/Requirement)
 | [rationale](rationale.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) | Why this exists | direct |
 | [dal](dal.md) | 0..1 <br/> [DALEnum](DALEnum.md) | Design Assurance Level of a requirement | direct |
 | [refines](refines.md) | * <br/> [Requirement](Requirement.md) | This requirement refines (decomposes) the referenced parent(s); transitive | direct |
+| [satisfied_by](satisfied_by.md) | * <br/> [ArchitectureElement](ArchitectureElement.md) | Inverse allocation — this requirement is satisfied by the referenced architec... | direct |
 
 
 
@@ -192,6 +204,7 @@ slots:
 - rationale
 - dal
 - refines
+- satisfied_by
 
 ```
 </details>
@@ -275,6 +288,19 @@ attributes:
     domain_of:
     - Requirement
     range: Requirement
+    multivalued: true
+  satisfied_by:
+    name: satisfied_by
+    description: Inverse allocation — this requirement is satisfied by the referenced
+      architecture element(s). This relation is derived from ArchitectureElement `satisfies`
+      in the authored data.
+    from_schema: https://vectormind.example/alm-ontology
+    rank: 1000
+    owner: Requirement
+    domain_of:
+    - Requirement
+    inverse: satisfies
+    range: ArchitectureElement
     multivalued: true
 
 ```

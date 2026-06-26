@@ -6,7 +6,7 @@ search:
 # Slot: satisfies 
 
 
-_Allocation — this architecture element is allocated the referenced requirement(s) (i.e. requirement allocated_to element)._
+_Allocation — this architecture element is allocated the referenced requirement(s) (i.e. the requirement is satisfied by this element)._
 
 
 
@@ -46,6 +46,15 @@ URI: [alm:satisfies](https://vectormind.example/alm-ontology/satisfies)
 | Property | Value |
 | --- | --- |
 | Multivalued | Yes |
+<details>
+<summary>Relationship Properties</summary>
+
+| Property | Value |
+| --- | --- |
+| Inverse | [satisfied_by](satisfied_by.md) |
+
+</details>
+
 
 
 
@@ -86,11 +95,12 @@ URI: [alm:satisfies](https://vectormind.example/alm-ontology/satisfies)
 ```yaml
 name: satisfies
 description: Allocation — this architecture element is allocated the referenced requirement(s)
-  (i.e. requirement allocated_to element).
+  (i.e. the requirement is satisfied by this element).
 from_schema: https://vectormind.example/alm-ontology
 rank: 1000
 domain_of:
 - ArchitectureElement
+inverse: satisfied_by
 range: Requirement
 multivalued: true
 

@@ -107,9 +107,18 @@ slots:
   satisfies:
     range: Requirement
     multivalued: true
+    inverse: satisfied_by
     description: >-
       Allocation — this architecture element is allocated the referenced
-      requirement(s) (i.e. requirement allocated_to element).
+      requirement(s) (i.e. the requirement is satisfied by this element).
+  satisfied_by:
+    range: ArchitectureElement
+    multivalued: true
+    inverse: satisfies
+    description: >-
+      Inverse allocation — this requirement is satisfied by the referenced
+      architecture element(s). This relation is derived from ArchitectureElement
+      `satisfies` in the authored data.
   verifies:
     range: Requirement
     description: The single requirement this test case verifies (carries an outcome).
@@ -128,7 +137,7 @@ slots:
 classes:
   Requirement:
     description: A binding specification statement, with a DAL.
-    slots: [id, title, statement, acceptance, rationale, dal, refines]
+    slots: [id, title, statement, acceptance, rationale, dal, refines, satisfied_by]
 
   ArchitectureElement:
     description: A feature/component in the technical breakdown.

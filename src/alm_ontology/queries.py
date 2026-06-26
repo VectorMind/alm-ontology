@@ -52,6 +52,11 @@ def coverage_gaps(min_dal: str = "A") -> pd.DataFrame:
         con.close()
 
 
+def coverage_gap_ids(min_dal: str = "A") -> tuple[list[str], str]:
+    """Renderer-friendly list of coverage-gap requirement ids."""
+    return coverage_gaps(min_dal=min_dal)["id"].tolist(), "recursive-sql"
+
+
 def coverage_summary() -> pd.DataFrame:
     """Per-DAL coverage: total requirements vs those with a passing test."""
     con = warehouse.connect("parquet")
@@ -106,3 +111,13 @@ def defects_per_element(top: int | None = None) -> pd.DataFrame:
         return df
     finally:
         con.close()
+
+
+def defect_counts_by_element(top: int | None = None) -> tuple[list[dict[str, int | str]], str]:
+    """Renderer-friendly defect counts per directly affected architecture element."""
+    df = defects_per_element(top=top)
+    rows = [
+        {"id": row["id"], "name": row["name"], "n_defects": int(row["n_defects"])}
+        for _, row in df.iterrows()
+    ]
+    return rows, "recursive-sql"
