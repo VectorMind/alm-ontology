@@ -59,6 +59,14 @@ URI: [alm:name](https://vectormind.example/alm-ontology/name)
 
 
 
+### Annotations
+
+| property | value |
+| --- | --- |
+| searchable | True |
+| embeddable | True |
+
+
 
 
 ### Schema Source
@@ -84,6 +92,13 @@ URI: [alm:name](https://vectormind.example/alm-ontology/name)
 <details>
 ```yaml
 name: name
+annotations:
+  searchable:
+    tag: searchable
+    value: true
+  embeddable:
+    tag: embeddable
+    value: true
 description: Human-readable name.
 from_schema: https://vectormind.example/alm-ontology
 rank: 1000

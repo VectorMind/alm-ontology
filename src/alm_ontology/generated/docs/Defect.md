@@ -217,6 +217,13 @@ attributes:
     required: true
   title:
     name: title
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Short human-readable title.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000
@@ -228,6 +235,13 @@ attributes:
     range: string
   description:
     name: description
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Free-text description.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000

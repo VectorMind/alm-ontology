@@ -151,6 +151,62 @@ def coverage(min_dal: str = typer.Option("A", help="Minimum DAL criticality (A..
         typer.echo(f"  {row['id']}  DAL {row['dal']}  {row['title']}  [{outcomes}]")
 
 
+@app.command("rebuild-exposures")
+def rebuild_exposures(
+    semantic: bool = typer.Option(
+        False,
+        "--semantic/--no-semantic",
+        help="Also build FastEmbed/pgvector semantic rows.",
+    ),
+) -> None:
+    """Rebuild Postgres search and semantic exposures from warehouse tables."""
+    from alm_ontology import pg_exposure
+
+    counts = pg_exposure.rebuild(semantic=semantic)
+    typer.secho("Postgres exposures rebuilt.", fg=typer.colors.GREEN)
+    typer.echo(f"  search documents {counts['documents']:5d} rows")
+    typer.echo(f"  embeddings       {counts['embeddings']:5d} rows")
+
+
+@app.command()
+def search(
+    query: str = typer.Argument(..., help="Full-text query."),
+    limit: int = typer.Option(10, help="Maximum results."),
+) -> None:
+    """Search ALM entities through Postgres full-text search."""
+    from alm_ontology import pg_exposure
+
+    hits = pg_exposure.search(query, limit=limit)
+    if not hits:
+        typer.secho("No search hits.", fg=typer.colors.YELLOW)
+        return
+    for hit in hits:
+        typer.echo(
+            f"{hit['object_type']:20s} {hit['object_id']:12s} "
+            f"{hit['rank']:.4f}  {hit['label']}"
+        )
+        typer.echo(f"  {hit['snippet']}")
+
+
+@app.command()
+def similar(
+    query: str = typer.Argument(..., help="Semantic query."),
+    limit: int = typer.Option(10, help="Maximum results."),
+) -> None:
+    """Find semantically similar ALM entities through FastEmbed + pgvector."""
+    from alm_ontology import pg_exposure
+
+    hits = pg_exposure.similar(query, limit=limit)
+    if not hits:
+        typer.secho("No semantic hits. Run `almon rebuild-exposures --semantic` first.", fg=typer.colors.YELLOW)
+        return
+    for hit in hits:
+        typer.echo(
+            f"{hit['object_type']:20s} {hit['object_id']:12s} "
+            f"{hit['distance']:.4f}  {hit['label']}"
+        )
+
+
 @app.command()
 def impact(
     req: str = typer.Option(..., help="Requirement id, e.g. REQ-0110."),

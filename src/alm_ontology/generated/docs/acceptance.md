@@ -59,6 +59,14 @@ URI: [alm:acceptance](https://vectormind.example/alm-ontology/acceptance)
 
 
 
+### Annotations
+
+| property | value |
+| --- | --- |
+| searchable | True |
+| embeddable | True |
+
+
 
 
 ### Schema Source
@@ -84,6 +92,13 @@ URI: [alm:acceptance](https://vectormind.example/alm-ontology/acceptance)
 <details>
 ```yaml
 name: acceptance
+annotations:
+  searchable:
+    tag: searchable
+    value: true
+  embeddable:
+    tag: embeddable
+    value: true
 description: Acceptance criteria that decide whether the requirement is met.
 from_schema: https://vectormind.example/alm-ontology
 rank: 1000

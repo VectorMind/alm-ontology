@@ -59,6 +59,14 @@ URI: [alm:statement](https://vectormind.example/alm-ontology/statement)
 
 
 
+### Annotations
+
+| property | value |
+| --- | --- |
+| searchable | True |
+| embeddable | True |
+
+
 
 
 ### Schema Source
@@ -84,6 +92,13 @@ URI: [alm:statement](https://vectormind.example/alm-ontology/statement)
 <details>
 ```yaml
 name: statement
+annotations:
+  searchable:
+    tag: searchable
+    value: true
+  embeddable:
+    tag: embeddable
+    value: true
 description: The binding specification text — what shall be achieved.
 from_schema: https://vectormind.example/alm-ontology
 rank: 1000

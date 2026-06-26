@@ -59,6 +59,14 @@ URI: [alm:rationale](https://vectormind.example/alm-ontology/rationale)
 
 
 
+### Annotations
+
+| property | value |
+| --- | --- |
+| searchable | True |
+| embeddable | True |
+
+
 
 
 ### Schema Source
@@ -84,6 +92,13 @@ URI: [alm:rationale](https://vectormind.example/alm-ontology/rationale)
 <details>
 ```yaml
 name: rationale
+annotations:
+  searchable:
+    tag: searchable
+    value: true
+  embeddable:
+    tag: embeddable
+    value: true
 description: Why this exists.
 from_schema: https://vectormind.example/alm-ontology
 rank: 1000

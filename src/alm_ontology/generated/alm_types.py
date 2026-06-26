@@ -157,10 +157,18 @@ class Requirement(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://vectormind.example/alm-ontology'})
 
     id: str = Field(default=..., description="""Stable identifier (e.g. REQ-0001, ARC-PROP, TST-0007, DEF-0003).""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'ArchitectureElement', 'TestCase', 'Defect']} })
-    title: Optional[str] = Field(default=None, description="""Short human-readable title.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'TestCase', 'Defect']} })
-    statement: Optional[str] = Field(default=None, description="""The binding specification text — what shall be achieved.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
-    acceptance: Optional[str] = Field(default=None, description="""Acceptance criteria that decide whether the requirement is met.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
-    rationale: Optional[str] = Field(default=None, description="""Why this exists.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
+    title: Optional[str] = Field(default=None, description="""Short human-readable title.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['Requirement', 'TestCase', 'Defect']} })
+    statement: Optional[str] = Field(default=None, description="""The binding specification text — what shall be achieved.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['Requirement']} })
+    acceptance: Optional[str] = Field(default=None, description="""Acceptance criteria that decide whether the requirement is met.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['Requirement']} })
+    rationale: Optional[str] = Field(default=None, description="""Why this exists.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['Requirement']} })
     dal: Optional[DALEnum] = Field(default=None, description="""Design Assurance Level of a requirement.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
     refines: Optional[list[str]] = Field(default=None, description="""This requirement refines (decomposes) the referenced parent(s); transitive.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement']} })
     satisfied_by: Optional[list[str]] = Field(default=None, description="""Inverse allocation — this requirement is satisfied by the referenced architecture element(s). This relation is derived from ArchitectureElement `satisfies` in the authored data.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement'], 'inverse': 'satisfies'} })
@@ -173,9 +181,13 @@ class ArchitectureElement(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://vectormind.example/alm-ontology'})
 
     id: str = Field(default=..., description="""Stable identifier (e.g. REQ-0001, ARC-PROP, TST-0007, DEF-0003).""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'ArchitectureElement', 'TestCase', 'Defect']} })
-    name: Optional[str] = Field(default=None, description="""Human-readable name.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement']} })
+    name: Optional[str] = Field(default=None, description="""Human-readable name.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['ArchitectureElement']} })
     kind: Optional[ElementKindEnum] = Field(default=None, description="""Coarse kind of an architecture element.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement']} })
-    description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
+    description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
     composed_of: Optional[list[str]] = Field(default=None, description="""This element is composed of the referenced sub-element(s); transitive.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement']} })
     satisfies: Optional[list[str]] = Field(default=None, description="""Allocation — this architecture element is allocated the referenced requirement(s) (i.e. the requirement is satisfied by this element).""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement'], 'inverse': 'satisfied_by'} })
 
@@ -187,8 +199,12 @@ class TestCase(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://vectormind.example/alm-ontology'})
 
     id: str = Field(default=..., description="""Stable identifier (e.g. REQ-0001, ARC-PROP, TST-0007, DEF-0003).""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'ArchitectureElement', 'TestCase', 'Defect']} })
-    title: Optional[str] = Field(default=None, description="""Short human-readable title.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'TestCase', 'Defect']} })
-    description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
+    title: Optional[str] = Field(default=None, description="""Short human-readable title.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['Requirement', 'TestCase', 'Defect']} })
+    description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
     verifies: Optional[str] = Field(default=None, description="""The single requirement this test case verifies (carries an outcome).""", json_schema_extra = { "linkml_meta": {'domain_of': ['TestCase']} })
     outcome: Optional[OutcomeEnum] = Field(default=None, description="""Result carried by a verification relationship.""", json_schema_extra = { "linkml_meta": {'domain_of': ['TestCase']} })
 
@@ -200,8 +216,12 @@ class Defect(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://vectormind.example/alm-ontology'})
 
     id: str = Field(default=..., description="""Stable identifier (e.g. REQ-0001, ARC-PROP, TST-0007, DEF-0003).""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'ArchitectureElement', 'TestCase', 'Defect']} })
-    title: Optional[str] = Field(default=None, description="""Short human-readable title.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Requirement', 'TestCase', 'Defect']} })
-    description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
+    title: Optional[str] = Field(default=None, description="""Short human-readable title.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['Requirement', 'TestCase', 'Defect']} })
+    description: Optional[str] = Field(default=None, description="""Free-text description.""", json_schema_extra = { "linkml_meta": {'annotations': {'embeddable': {'tag': 'embeddable', 'value': True},
+                         'searchable': {'tag': 'searchable', 'value': True}},
+         'domain_of': ['ArchitectureElement', 'TestCase', 'Defect']} })
     severity: Optional[SeverityEnum] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain_of': ['Defect']} })
     status: Optional[DefectStatusEnum] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain_of': ['Defect']} })
     affects: Optional[list[str]] = Field(default=None, description="""Architecture element(s) where this defect manifests.""", json_schema_extra = { "linkml_meta": {'domain_of': ['Defect']} })

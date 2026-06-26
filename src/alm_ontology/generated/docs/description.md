@@ -61,6 +61,14 @@ URI: [alm:description](https://vectormind.example/alm-ontology/description)
 
 
 
+### Annotations
+
+| property | value |
+| --- | --- |
+| searchable | True |
+| embeddable | True |
+
+
 
 
 ### Schema Source
@@ -86,6 +94,13 @@ URI: [alm:description](https://vectormind.example/alm-ontology/description)
 <details>
 ```yaml
 name: description
+annotations:
+  searchable:
+    tag: searchable
+    value: true
+  embeddable:
+    tag: embeddable
+    value: true
 description: Free-text description.
 from_schema: https://vectormind.example/alm-ontology
 rank: 1000

@@ -234,6 +234,13 @@ attributes:
     required: true
   title:
     name: title
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Short human-readable title.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000
@@ -245,6 +252,13 @@ attributes:
     range: string
   statement:
     name: statement
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: The binding specification text — what shall be achieved.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000
@@ -254,6 +268,13 @@ attributes:
     range: string
   acceptance:
     name: acceptance
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Acceptance criteria that decide whether the requirement is met.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000
@@ -263,6 +284,13 @@ attributes:
     range: string
   rationale:
     name: rationale
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Why this exists.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000

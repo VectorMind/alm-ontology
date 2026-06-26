@@ -4,10 +4,8 @@ Operational and in-flight details not captured in `plan.md`. Read this before co
 
 ## Working state
 
-- **Branch:** `feat/age-substrate` (off `main`). Phases 1–2 landed in the working tree,
-  **not committed** (maintainer owns git per the workflow). New/modified areas include AGE graph
-  backend, graph CLI lifecycle, formal GQC files, LinkML inverse relation + generated artifacts,
-  custom Docker image, and FastEmbed profile config.
+- **Branch:** `main`. `feat/age-substrate` was fast-forward merged into `main` per maintainer
+  direction; continue this initiative on `main` with no extra branch.
 - **Container:** `alm-age` (from `docker-compose.yml`) is up and healthy on `localhost:5432`. Tear
   down with `docker compose down` (add `-v` to drop the data volume). It was recreated with
   `alm-ontology-age:pg18-age-pgvector`; `CREATE EXTENSION vector` works and reports pgvector `0.8.3`.
@@ -21,6 +19,10 @@ uv run almon graph rebuild            # persist the AGE graph explicitly
 uv run almon graph run impact --req REQ-0110 --no-rebuild
 uv run almon impact --req REQ-0110 --engine all
 uv run almon graph validate-gqc
+uv run almon rebuild-exposures
+uv run almon search "battery thermal" --limit 5
+uv run --extra embeddings almon rebuild-exposures --semantic
+uv run --extra embeddings almon similar "battery thermal containment" --limit 5
 uv run pytest -q                      # AGE tests skip automatically if the container is down
 ```
 
@@ -62,12 +64,15 @@ uv run pytest -q                      # AGE tests skip automatically if the cont
 - **Graph rebuild policy.** `graph_age.impact()` still rebuilds by default. Set
   `ALM_AGE_REBUILD_ON_QUERY=0` or pass `rebuild_graph=False` after running `almon graph rebuild`.
   `almon graph run ... --no-rebuild` exercises the persisted graph path.
+- **Search/semantic exposure rebuilds.** `almon rebuild-exposures` rebuilds FTS rows in Postgres.
+  Add `--semantic` with `uv run --extra embeddings` to build FastEmbed vectors. FastEmbed model files
+  cache under `.cache/alm-ontology/`.
 
 ## Next action
 
-Phase 4 is next: add LinkML `searchable`/`embeddable` annotations, native Postgres `tsvector` search,
-FastEmbed-backed `pgvector` rows, and `almon search` / `almon similar`. Keep the Phase 5 DuckDB
-retirement boundary separate unless you are ready to move relational tables into Postgres.
+Phase 5 is next: create relational tables in Postgres from LinkML, move recursive SQL off DuckDB and
+onto Postgres, repoint reports/queries, and retire DuckDB as a runtime query substrate. Keep Parquet
+only as export/interchange if still useful.
 
 ## Plans-management note
 

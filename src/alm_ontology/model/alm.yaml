@@ -71,16 +71,34 @@ slots:
     description: Stable identifier (e.g. REQ-0001, ARC-PROP, TST-0007, DEF-0003).
   title:
     description: Short human-readable title.
+    annotations:
+      searchable: true
+      embeddable: true
   name:
     description: Human-readable name.
+    annotations:
+      searchable: true
+      embeddable: true
   statement:
     description: The binding specification text — what shall be achieved.
+    annotations:
+      searchable: true
+      embeddable: true
   acceptance:
     description: Acceptance criteria that decide whether the requirement is met.
+    annotations:
+      searchable: true
+      embeddable: true
   description:
     description: Free-text description.
+    annotations:
+      searchable: true
+      embeddable: true
   rationale:
     description: Why this exists.
+    annotations:
+      searchable: true
+      embeddable: true
   dal:
     range: DALEnum
     description: Design Assurance Level of a requirement.

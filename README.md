@@ -46,6 +46,10 @@ uv run almon validate            # structural + cross-entity completeness checks
 uv run almon coverage --min-dal A
 uv run almon impact --req REQ-0007 --engine all
 uv run almon graph run impact --req REQ-0007 --no-rebuild
+uv run almon rebuild-exposures
+uv run almon search "battery thermal"
+uv run --extra embeddings almon rebuild-exposures --semantic
+uv run --extra embeddings almon similar "battery thermal containment"
 uv run almon propagate
 uv run almon report --topic full # -> .report/<date>/full-<HHMM>.{md,html}
 uv run almon serve               # browse reports at http://localhost:8000

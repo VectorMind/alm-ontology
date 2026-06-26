@@ -159,5 +159,5 @@ CREATE TABLE "Defect_violates" (
 	FOREIGN KEY("Defect_id") REFERENCES "Defect" (id),
 	FOREIGN KEY(violates_id) REFERENCES "Requirement" (id)
 );
-CREATE INDEX "ix_Defect_violates_violates_id" ON "Defect_violates" (violates_id);
 CREATE INDEX "ix_Defect_violates_Defect_id" ON "Defect_violates" ("Defect_id");
+CREATE INDEX "ix_Defect_violates_violates_id" ON "Defect_violates" (violates_id);

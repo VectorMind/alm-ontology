@@ -207,6 +207,13 @@ attributes:
     required: true
   name:
     name: name
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Human-readable name.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000
@@ -225,6 +232,13 @@ attributes:
     range: ElementKindEnum
   description:
     name: description
+    annotations:
+      searchable:
+        tag: searchable
+        value: true
+      embeddable:
+        tag: embeddable
+        value: true
     description: Free-text description.
     from_schema: https://vectormind.example/alm-ontology
     rank: 1000

@@ -2,8 +2,8 @@
 
 ## Progress
 
-`▰▰▰▱▱ Phase 3/5` — Phase 3 (remaining GQC capability registry) done and proven; next is Phase 4
-(search and semantic exposures).
+`▰▰▰▰▱ Phase 4/5` — Phase 4 (search and semantic exposures) done and proven; next is Phase 5
+(Postgres relational parity and DuckDB retirement).
 
 ---
 
@@ -174,10 +174,58 @@ uv run almon graph run impact --req REQ-0110 --no-rebuild
 # [age] impacted defects (3): DEF-0001, DEF-0004, DEF-0016
 ```
 
-## Remaining (Phases 4–5)
+## Done (Phase 4 — search and semantic exposures)
 
-- **Phase 4** — `searchable`/`embeddable` annotations → `tsvector` + `pgvector`; `almon search` /
+Postgres now exposes the rebuilt warehouse through native full-text search and FastEmbed-backed
+pgvector semantic search.
+
+Files changed:
+
+- **`src/alm_ontology/model/alm.yaml`** — added `searchable` and `embeddable` annotations to
+  human-text slots (`title`, `name`, `statement`, `acceptance`, `description`, `rationale`);
+  regenerated `src/alm_ontology/generated/`.
+- **`src/alm_ontology/pg_exposure.py`** (new) — rebuilds `alm_search_documents` from warehouse
+  frames using LinkML annotations, creates a generated `tsvector` column + GIN index, optionally
+  creates `alm_semantic_embeddings` with `vector(384)` rows, and runs FTS/semantic queries.
+- **`src/alm_ontology/cli.py`** — added `almon rebuild-exposures`, `almon search`, and
   `almon similar`.
+- **`.gitignore`** — ignores `.cache/`, where FastEmbed model files are cached.
+- **`tests/test_pg_exposure.py`** (new) — covers annotation-derived records, Postgres FTS, and
+  pgvector similarity with a fake embedder so tests do not download model weights.
+
+Implementation facts:
+
+- Search rows are one document per node row (`Requirement`, `ArchitectureElement`, `TestCase`,
+  `Defect`), currently 126 rows in the VM-E1 dataset.
+- `almon rebuild-exposures` rebuilds FTS rows only; `almon rebuild-exposures --semantic` also builds
+  FastEmbed vectors in pgvector.
+- FastEmbed uses the existing `fastembed_bge_small_en_v1_5` profile
+  (`BAAI/bge-small-en-v1.5`, 384 dims). Runtime model files cache under `.cache/alm-ontology/`.
+- Search/semantic exposures are still rebuilt from the warehouse frames; they do not make Postgres
+  the relational source of truth yet. That remains Phase 5.
+
+Commands / proof:
+
+```
+uv run almon model gen
+uv run almon rebuild-exposures
+# search documents   126 rows
+uv run almon search "battery thermal" --limit 5
+# returns REQ-0115, REQ-0111, ARC-BATT ...
+uv run --extra embeddings almon rebuild-exposures --semantic
+# search documents   126 rows; embeddings 126 rows
+uv run --extra embeddings almon similar "battery thermal containment" --limit 5
+# returns ARC-BATT, REQ-0115, REQ-0111, ARC-BMS, ARC-ELEC
+uv run pytest -q
+# 36 passed
+uv run ruff check .
+# All checks passed!
+uv run almon graph validate-gqc
+# all five capabilities ok
+```
+
+## Remaining (Phase 5)
+
 - **Phase 5** — create relational tables in PG from LinkML; move `recursive_sql` onto PG; collapse the
   two-schema split; repoint reports; retire DuckDB-as-substrate (keep Parquet only as export/interchange
   if useful).
