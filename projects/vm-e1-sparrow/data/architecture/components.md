@@ -1,7 +1,5 @@
 # VM-E1 *Sparrow* — Component Architecture
 
-> ⚠️ FULLY AI-GENERATED DUMMY EXAMPLE — NOT FOR REAL-WORLD USE. See [../README.md](../README.md).
-
 This is the authored technical breakdown of the VM-E1, derived **from** the
 [binding requirements](../requirements/requirements.yaml). It records the components,
 their composition, and which requirements each is allocated (`satisfies`). It mirrors

@@ -1,4 +1,3 @@
-# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
 # Defects: problems that VIOLATE requirements and manifest in AFFECTED components.
 defects:
   - id: DEF-0001

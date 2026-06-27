@@ -1,4 +1,3 @@
-# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
 # Verification: each test case verifies one requirement and carries an outcome.
 # Deliberate gaps: REQ-0306 (failed-only) and REQ-0112 (not_run) -> DAL-A coverage gaps.
 test_cases:

@@ -1,4 +1,3 @@
-# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
 # Binding specification for the fictional VM-E1 "Sparrow" single-seat electric aircraft.
 # Each requirement: id, title, statement, acceptance, dal (A=most critical .. E), refines.
 requirements:

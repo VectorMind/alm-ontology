@@ -1,4 +1,3 @@
-# FULLY AI-GENERATED DUMMY DATA — NOT FOR REAL-WORLD USE. See ../README.md.
 # Technical breakdown of the VM-E1, AUTHORED FROM the requirements.
 #   composed_of : decomposition (parent is composed of children)
 #   satisfies   : allocation (this element is allocated the listed requirements)
