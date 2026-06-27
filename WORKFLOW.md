@@ -13,9 +13,9 @@ nothing is a store of record except the authored inputs. Hold this line when add
 
 The durable contract lives in the model, not in prose:
 
-- `src/alm_model/model/alm.yaml` — the LinkML spine. Entity types, controlled vocabularies, and
+- `projects/<name>/model/alm.yaml` — the LinkML spine. Entity types, controlled vocabularies, and
   permitted relationships. Edit here first when the domain changes, then regenerate.
-- `src/alm_model/generated/` — Pydantic types, SQL DDL, docs **generated** from the model
+- `projects/<name>/generated/` — Pydantic types, SQL DDL, docs **generated** from the model
   (`almon model gen`). Committed for reviewability but regenerable; never hand-edit.
 - `plans/concept-handover/` — the original handover, POC proposal, and research reports. Durable
   reference for *why* the architecture is shaped as it is. Read-only history; do not rewrite.

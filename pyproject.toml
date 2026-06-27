@@ -40,10 +40,15 @@ packages = [
 ]
 
 [tool.hatch.build.targets.wheel.force-include]
-"config/embeddings.yaml" = "config/embeddings.yaml"
-"src/alm_graph/gqc_specs" = "alm_graph/gqc_specs"
-"src/alm_model/model" = "alm_model/model"
-"src/alm_model/generated" = "alm_model/generated"
+"projects/vm-e1-sparrow/config/embeddings.yaml" = "projects/vm-e1-sparrow/config/embeddings.yaml"
+"projects/vm-e1-sparrow/gqc" = "projects/vm-e1-sparrow/gqc"
+"projects/vm-e1-sparrow/model" = "projects/vm-e1-sparrow/model"
+"projects/vm-e1-sparrow/generated" = "projects/vm-e1-sparrow/generated"
+
+# The active project supplies the model, dataset, GQC specs, and config. Hardcoded
+# for now; a --project override can be added when more than one project exists.
+[tool.almon]
+active_project = "vm-e1-sparrow"
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.5"]
@@ -51,7 +56,7 @@ dev = ["pytest>=8", "ruff>=0.5"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["src/alm_model/generated"]
+extend-exclude = ["projects/*/generated"]
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]

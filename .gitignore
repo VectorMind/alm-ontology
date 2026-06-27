@@ -11,4 +11,10 @@ dist/
 
 # POC artifacts
 .report/
-data/warehouse/
+projects/*/.report/
+projects/*/data/warehouse/
+
+# Per-project generated artifacts are regenerable via `almon model gen`.
+# Kept committed for now (the demo); uncomment to ignore once you're comfortable
+# rebuilding them on demand:
+# projects/*/generated/

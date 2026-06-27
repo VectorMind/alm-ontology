@@ -16,7 +16,7 @@ import yaml
 
 from alm_core import paths
 
-GQC_DIR = paths.SRC_ROOT / "alm_graph" / "gqc_specs"
+GQC_DIR = paths.GQC_DIR
 ALLOWED_SHAPES = {
     "closure",
     "fixed_multi_hop_path",

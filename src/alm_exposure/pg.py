@@ -233,7 +233,7 @@ def _ensure_vector_extension(con) -> None:
 
 
 def _embedding_profile(name: str) -> dict[str, Any]:
-    config_path = paths.REPO_ROOT / "config" / "embeddings.yaml"
+    config_path = paths.EMBEDDINGS_FILE
     with config_path.open(encoding="utf-8") as fh:
         config = yaml.safe_load(fh) or {}
     for profile in config.get("profiles") or []:

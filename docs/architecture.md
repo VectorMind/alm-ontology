@@ -39,10 +39,10 @@ constrains which questions the query contract may pose.
 
 | Concept | Realization in this repo |
 |---|---|
-| **Ontology** | LinkML schema [`alm.yaml`](../src/alm_model/model/alm.yaml) → generated Pydantic types, SQL DDL, and docs ([`modelgen.py`](../src/alm_model/modelgen.py)). |
-| **Source of truth** | Committed [`data/*.yaml`](../data/), validated and loaded into Postgres warehouse node + edge tables ([`warehouse.py`](../src/alm_core/warehouse.py)). |
+| **Ontology** | LinkML schema [`alm.yaml`](../projects/vm-e1-sparrow/model/alm.yaml) → generated Pydantic types, SQL DDL, and docs ([`modelgen.py`](../src/alm_model/modelgen.py)). |
+| **Source of truth** | Committed [`data/*.yaml`](../projects/vm-e1-sparrow/data/), validated and loaded into Postgres warehouse node + edge tables ([`warehouse.py`](../src/alm_core/warehouse.py)). |
 | **Graph** | Rebuilt from the tables on demand — *tables are truth, the graph is a regenerable view*. |
-| **Query contract** | Graph Query Contract specs [`*.gqc.yaml`](../src/alm_graph/gqc_specs/), validated against the ontology's classes and slots ([`gqc.py`](../src/alm_graph/gqc.py)). |
+| **Query contract** | Graph Query Contract specs [`*.gqc.yaml`](../projects/vm-e1-sparrow/gqc/), validated against the ontology's classes and slots ([`gqc.py`](../src/alm_graph/gqc.py)). |
 | **Graph engines** | Apache AGE / openCypher ([`age.py`](../src/alm_graph/age.py)), recursive SQL ([`sql.py`](../src/alm_graph/sql.py)), and in-memory rustworkx ([`rustworkx.py`](../src/alm_graph/rustworkx.py)). |
 | **Search exposures** | Postgres full-text search and pgvector semantic similarity ([`pg.py`](../src/alm_exposure/pg.py)). |
 | **Answers** | impact · coverage · DAL propagation · refines closure · search. |
@@ -64,7 +64,7 @@ The constraint split mirrors the cost of the check:
 
 GQC describes the supported graph questions as a small, closed set of **named,
 finite capabilities** — not a general query language. Each capability (for example
-[`impact.gqc.yaml`](../src/alm_graph/gqc_specs/impact.gqc.yaml)) is a YAML document
+[`impact.gqc.yaml`](../projects/vm-e1-sparrow/gqc/impact.gqc.yaml)) is a YAML document
 that records:
 
 - the **shape** of the question (closure, fixed multi-hop path, anti-join, …);
@@ -118,15 +118,15 @@ pattern — it propagates down the architecture composition and requires a quali
 passing test for critical items — only the vocabulary is domain-specific.
 
 The bundled VM-E1 records are example data only; the dataset-specific notice lives
-in the [data README](../data/README.md).
+in the [data README](../projects/vm-e1-sparrow/data/README.md).
 
 ## Extending it
 
 - **Replace the bundled data:** emit the normalized dataset shape in
   [data-contract.md](data-contract.md), then run validation before rebuilding the
   warehouse and graph views.
-- **Add or change an entity or relationship:** edit [`alm.yaml`](../src/alm_model/model/alm.yaml),
-  run `almon model gen`, and update `data/` to match.
+- **Add or change an entity or relationship:** edit [`alm.yaml`](../projects/vm-e1-sparrow/model/alm.yaml),
+  run `almon model gen`, and update the project's `data/` to match.
 - **Add a new graph question:** author a new `*.gqc.yaml` capability, implement its
   renderer(s), and add fixtures. The GQC validator will hold it to the model.
 - **Add a new engine for an existing question:** point a new renderer entrypoint at

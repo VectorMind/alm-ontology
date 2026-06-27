@@ -8,7 +8,7 @@ warehouse loading, graph rebuilding, search indexing, or report generation.
 ## The model defines this contract
 
 The authority for everything in this document is the LinkML model
-[`src/alm_model/model/alm.yaml`](../src/alm_model/model/alm.yaml). It declares the
+[`projects/<name>/model/alm.yaml`](../projects/vm-e1-sparrow/model/alm.yaml). It declares the
 four classes (`Requirement`, `ArchitectureElement`, `TestCase`, `Defect`), their
 slots, the controlled vocabularies (`DALEnum`, `ElementKindEnum`, `OutcomeEnum`,
 `SeverityEnum`, `DefectStatusEnum`), and the relationships. **The Record Contract and
@@ -59,8 +59,8 @@ of it. See [docs/architecture.md](architecture.md) for the layers in depth.
 
 ## Boundary
 
-The contract starts at the authored dataset root, currently `data/`. Everything
-downstream is derived:
+The contract starts at the authored dataset root, the active project's `data/`
+folder (currently `projects/vm-e1-sparrow/data/`). Everything downstream is derived:
 
 - LinkML structural validation reads the merged dataset.
 - Referential validation checks relationship targets.
@@ -74,7 +74,7 @@ The contract is therefore the normalized input shape, not a raw export format.
 ## Dataset Layout
 
 ```text
-data/
+projects/<name>/data/
   requirements/
     requirements.yaml
     tests.yaml
@@ -195,5 +195,5 @@ Keep production integrations outside the core graph/query code:
 4. Build the warehouse and all derived views from the normalized dataset.
 
 If another domain needs different entities, relationships, or vocabularies, change
-`src/alm_model/model/alm.yaml` first, regenerate with `uv run almon model gen`, then
-update adapters and GQC specs to match the new model.
+the active project's `model/alm.yaml` first, regenerate with `uv run almon model gen`,
+then update adapters and GQC specs to match the new model.

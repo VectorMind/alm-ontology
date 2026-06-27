@@ -71,9 +71,31 @@ def load_raw() -> dict[str, list[dict]]:
     return merged
 
 
+def _load_dataset_class():
+    """Load the ``Dataset`` Pydantic class from the active project's generated types.
+
+    The generated module lives under ``projects/<name>/generated/`` (not on the import
+    path), so it is loaded by file location. Run ``almon model gen`` if it is missing.
+    """
+    import importlib.util
+    import sys
+
+    if not paths.GENERATED_TYPES.exists():
+        raise FileNotFoundError(
+            f"generated types not found at {paths.GENERATED_TYPES}; run `almon model gen` first"
+        )
+    spec = importlib.util.spec_from_file_location("alm_generated_types", paths.GENERATED_TYPES)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"could not load generated types from {paths.GENERATED_TYPES}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module  # let pydantic resolve forward references
+    spec.loader.exec_module(module)
+    return module.Dataset
+
+
 def validate_structural(raw: dict[str, list[dict]]) -> list[str]:
     """Validate records against the generated Pydantic types. Returns error strings."""
-    from alm_model.generated.alm_types import Dataset
+    Dataset = _load_dataset_class()
 
     errors: list[str] = []
     try:

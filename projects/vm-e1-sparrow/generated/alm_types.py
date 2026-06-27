@@ -82,7 +82,7 @@ linkml_meta = LinkMLMeta({'default_prefix': 'alm',
                           'prefix_reference': 'https://vectormind.example/alm-ontology/'},
                   'linkml': {'prefix_prefix': 'linkml',
                              'prefix_reference': 'https://w3id.org/linkml/'}},
-     'source_file': 'C:\\dev\\VectorMind\\alm-ontology\\src\\alm_model\\model\\alm.yaml',
+     'source_file': 'C:\\dev\\VectorMind\\alm-ontology\\projects\\vm-e1-sparrow\\model\\alm.yaml',
      'title': 'ALM Ontology'} )
 
 class DALEnum(str, Enum):

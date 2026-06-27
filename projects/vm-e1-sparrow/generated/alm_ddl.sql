@@ -119,8 +119,8 @@ CREATE TABLE "Requirement_satisfied_by" (
 	FOREIGN KEY("Requirement_id") REFERENCES "Requirement" (id),
 	FOREIGN KEY(satisfied_by_id) REFERENCES "ArchitectureElement" (id)
 );
-CREATE INDEX "ix_Requirement_satisfied_by_Requirement_id" ON "Requirement_satisfied_by" ("Requirement_id");
 CREATE INDEX "ix_Requirement_satisfied_by_satisfied_by_id" ON "Requirement_satisfied_by" (satisfied_by_id);
+CREATE INDEX "ix_Requirement_satisfied_by_Requirement_id" ON "Requirement_satisfied_by" ("Requirement_id");
 
 CREATE TABLE "ArchitectureElement_composed_of" (
 	"ArchitectureElement_id" TEXT,
@@ -139,8 +139,8 @@ CREATE TABLE "ArchitectureElement_satisfies" (
 	FOREIGN KEY("ArchitectureElement_id") REFERENCES "ArchitectureElement" (id),
 	FOREIGN KEY(satisfies_id) REFERENCES "Requirement" (id)
 );
-CREATE INDEX "ix_ArchitectureElement_satisfies_ArchitectureElement_id" ON "ArchitectureElement_satisfies" ("ArchitectureElement_id");
 CREATE INDEX "ix_ArchitectureElement_satisfies_satisfies_id" ON "ArchitectureElement_satisfies" (satisfies_id);
+CREATE INDEX "ix_ArchitectureElement_satisfies_ArchitectureElement_id" ON "ArchitectureElement_satisfies" ("ArchitectureElement_id");
 
 CREATE TABLE "Defect_affects" (
 	"Defect_id" TEXT,
@@ -149,8 +149,8 @@ CREATE TABLE "Defect_affects" (
 	FOREIGN KEY("Defect_id") REFERENCES "Defect" (id),
 	FOREIGN KEY(affects_id) REFERENCES "ArchitectureElement" (id)
 );
-CREATE INDEX "ix_Defect_affects_Defect_id" ON "Defect_affects" ("Defect_id");
 CREATE INDEX "ix_Defect_affects_affects_id" ON "Defect_affects" (affects_id);
+CREATE INDEX "ix_Defect_affects_Defect_id" ON "Defect_affects" ("Defect_id");
 
 CREATE TABLE "Defect_violates" (
 	"Defect_id" TEXT,
@@ -159,5 +159,5 @@ CREATE TABLE "Defect_violates" (
 	FOREIGN KEY("Defect_id") REFERENCES "Defect" (id),
 	FOREIGN KEY(violates_id) REFERENCES "Requirement" (id)
 );
-CREATE INDEX "ix_Defect_violates_Defect_id" ON "Defect_violates" ("Defect_id");
 CREATE INDEX "ix_Defect_violates_violates_id" ON "Defect_violates" (violates_id);
+CREATE INDEX "ix_Defect_violates_Defect_id" ON "Defect_violates" ("Defect_id");

@@ -1,0 +1,15 @@
+# Project manifest for the active ALM project.
+#
+# Layout under this folder (all project-specific):
+#   model/alm.yaml      the ontology (LinkML)            -> generated/ via `almon model gen`
+#   generated/          Pydantic types, SQL DDL, docs    (regenerable; see docs/data-contract.md)
+#   data/               authored dataset (the substrate inputs of record)
+#   gqc/                *.gqc.yaml graph query contracts
+#   config/             project configuration (embedding profiles)
+#   .report/            generated reports (gitignored)
+
+name: VM-E1 Sparrow
+description: >-
+  Fictional single-seat electric light aircraft — a fully AI-generated dummy dataset
+  used to exercise the ALM ontology tooling. Not for real-world use.
+embedding_profile: fastembed_bge_small_en_v1_5
