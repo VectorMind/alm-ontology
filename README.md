@@ -70,6 +70,7 @@ left-spine-down for data flow (authored → truth → graph → answers).
 | **Source of truth** | Committed `projects/vm-e1-sparrow/data/*.yaml`, validated, loaded into Postgres warehouse node + edge tables |
 | **Graph** | Rebuilt from the tables on demand — *tables are truth, the graph is a regenerable view* |
 | **Query contract** | GQC specs [`*.gqc.yaml`](projects/vm-e1-sparrow/gqc/), validated against the ontology's classes & slots |
+| **Lower-layer query evidence** | Current AGE/openCypher and Postgres SQL query forms under [`graph-queries/`](projects/vm-e1-sparrow/graph-queries/) |
 | **Graph engines** | Apache AGE / openCypher · recursive SQL · rustworkx (in-memory) — one contract, asserted to agree |
 | **Search exposures** | Postgres full-text search · pgvector semantic similarity |
 | **Answers** | impact · coverage · DAL propagation · refines closure · search |
@@ -98,7 +99,7 @@ uv run almon serve               # browse reports at http://localhost:8000
 ## Data contract
 
 Each project is self-contained under [`projects/<name>/`](projects/) for authored
-inputs: model, dataset, GQC specs, and config. Generated artifacts live under
+inputs: model, dataset, GQC specs, lower-layer query evidence, and config. Generated artifacts live under
 `.cache/projects/<name>/`. The active project is set in
 `pyproject.toml` under `[tool.almon]`; today it is
 [`vm-e1-sparrow`](projects/vm-e1-sparrow/).

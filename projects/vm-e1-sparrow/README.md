@@ -82,6 +82,7 @@ flowchart TB
         MODEL["model/alm.yaml"]
         DATA["data/*.yaml and notes"]
         GQC["gqc/*.gqc.yaml"]
+        GQ["graph-queries/*"]
         CFG["config/embeddings.yaml"]
     end
 
@@ -107,6 +108,7 @@ Generated files live under `.cache/` and can be recreated.
 | [`model/alm.yaml`](model/alm.yaml) | The LinkML schema of record for this project. |
 | [`data/`](data/) | The fictional authored dataset: requirements, architecture, tests, and defects. |
 | [`gqc/`](gqc/) | Graph Query Contract capabilities that name supported graph questions. |
+| [`graph-queries/`](graph-queries/) | Lower-layer AGE/openCypher and Postgres SQL query evidence for the current renderers. |
 | [`config/embeddings.yaml`](config/embeddings.yaml) | Semantic search embedding profile configuration. |
 | [`project.yaml`](project.yaml) | Lightweight project manifest and local layout notes. |
 
@@ -116,7 +118,9 @@ Generated files live under `.cache/` and can be recreated.
 2. Read [`data/README.md`](data/README.md) to see how the fictional facts are organized.
 3. Inspect one GQC file, such as [`gqc/impact.gqc.yaml`](gqc/impact.gqc.yaml), to see how a question
    is made explicit.
-4. Run `uv run almon model gen`, then `uv run almon validate`, once the Postgres substrate is
+4. Inspect [`graph-queries/`](graph-queries/) to see the current lower-layer AGE/openCypher and SQL
+   forms behind those capabilities.
+5. Run `uv run almon model gen`, then `uv run almon validate`, once the Postgres substrate is
    available.
 
 The root [CLI reference](../../docs/cli-reference.md) lists which commands need Docker and what each

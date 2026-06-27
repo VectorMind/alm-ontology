@@ -4,6 +4,7 @@
 #   model/alm.yaml      the ontology (LinkML)            -> .cache/projects/<name>/generated/
 #   data/               authored dataset (the substrate inputs of record)
 #   gqc/                *.gqc.yaml graph query contracts
+#   graph-queries/      lower-layer AGE/openCypher and Postgres SQL query evidence
 #   config/             project configuration (embedding profiles)
 #
 # Regenerable outputs for this project live under .cache/projects/vm-e1-sparrow/:

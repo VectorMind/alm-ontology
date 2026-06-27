@@ -4,6 +4,7 @@ Completed packets with their proof.
 
 | Packet | Closed | Proof |
 |---|---|---|
+| [2026-06-27-graph-queries](2026-06-27-graph-queries/plan.md) | 2026-06-27 | Lower-layer graph query evidence added; proof in [implementation.md](2026-06-27-graph-queries/implementation.md). |
 | [2026-06-27-project-readme](2026-06-27-project-readme/plan.md) | 2026-06-27 | Project-level README added; duplicate warnings removed; proof in [implementation.md](2026-06-27-project-readme/implementation.md). |
 | [2026-06-27-cache-generated](2026-06-27-cache-generated/plan.md) | 2026-06-27 | Generated outputs moved under `.cache/projects/`; CLI reference added; proof in [implementation.md](2026-06-27-cache-generated/implementation.md). |
 | [2026-06-27-data-contract](2026-06-27-data-contract/plan.md) | 2026-06-27 | Dataset warning scoped to `data/`; data contract and proof in [implementation.md](2026-06-27-data-contract/implementation.md). |

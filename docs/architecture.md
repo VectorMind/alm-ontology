@@ -43,6 +43,7 @@ constrains which questions the query contract may pose.
 | **Source of truth** | Committed [`data/*.yaml`](../projects/vm-e1-sparrow/data/), validated and loaded into Postgres warehouse node + edge tables ([`warehouse.py`](../src/alm_core/warehouse.py)). |
 | **Graph** | Rebuilt from the tables on demand — *tables are truth, the graph is a regenerable view*. |
 | **Query contract** | Graph Query Contract specs [`*.gqc.yaml`](../projects/vm-e1-sparrow/gqc/), validated against the ontology's classes and slots ([`gqc.py`](../src/alm_graph/gqc.py)). |
+| **Lower-layer query evidence** | Human-readable AGE/openCypher and Postgres SQL forms under [`graph-queries/`](../projects/vm-e1-sparrow/graph-queries/). |
 | **Graph engines** | Apache AGE / openCypher ([`age.py`](../src/alm_graph/age.py)), recursive SQL ([`sql.py`](../src/alm_graph/sql.py)), and in-memory rustworkx ([`rustworkx.py`](../src/alm_graph/rustworkx.py)). |
 | **Search exposures** | Postgres full-text search and pgvector semantic similarity ([`pg.py`](../src/alm_exposure/pg.py)). |
 | **Answers** | impact · coverage · DAL propagation · refines closure · search. |
@@ -79,6 +80,19 @@ cannot reference a noun the model does not define.
 
 One contract, several backends: the same `impact` question is answered by AGE
 (openCypher), by recursive SQL, and by rustworkx.
+
+## Lower-layer query evidence
+
+The files under
+[`projects/vm-e1-sparrow/graph-queries/`](../projects/vm-e1-sparrow/graph-queries/)
+show the current query forms behind the GQC capabilities. They are intentionally
+named as graph queries, not GQL or SQL/PGQ: today the runtime forms are Apache AGE's
+openCypher subset and Postgres SQL.
+
+These files are reference evidence for review. The executable source still lives in
+the Python renderer modules named in each file header. Some files are templates
+rather than standalone runnable statements because the current renderers inline
+parameters or apply Python post-processing.
 
 ## Regenerable views and cross-engine agreement
 
@@ -131,3 +145,5 @@ in the [data README](../projects/vm-e1-sparrow/data/README.md).
   renderer(s), and add fixtures. The GQC validator will hold it to the model.
 - **Add a new engine for an existing question:** point a new renderer entrypoint at
   the capability; the cross-engine check keeps it in agreement with the others.
+- **Expose a lower-layer query for review:** add or update the matching file under
+  `graph-queries/` in the same packet as the renderer change.
