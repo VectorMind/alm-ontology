@@ -18,9 +18,9 @@ the model is the source of truth, not this page.**
 Why this matters in practice:
 
 - `uv run almon model gen` generates Pydantic types, SQL DDL, and docs *from*
-  `alm.yaml`. The generated Pydantic types are what `uv run almon validate` uses to
-  structurally check authored `data/`, so the contract is **enforced** by the model,
-  not merely described here.
+  `alm.yaml` under `.cache/projects/<project>/generated/`. The generated Pydantic
+  types are what `uv run almon validate` uses to structurally check authored `data/`,
+  so the contract is **enforced** by the model, not merely described here.
 - The allowed values in the field tables (DAL, kind, outcome, severity, status) are
   exactly the model's `permissible_values`.
 - To change the contract — add a field, a relationship, or a vocabulary value — edit

@@ -43,7 +43,6 @@ packages = [
 "projects/vm-e1-sparrow/config/embeddings.yaml" = "projects/vm-e1-sparrow/config/embeddings.yaml"
 "projects/vm-e1-sparrow/gqc" = "projects/vm-e1-sparrow/gqc"
 "projects/vm-e1-sparrow/model" = "projects/vm-e1-sparrow/model"
-"projects/vm-e1-sparrow/generated" = "projects/vm-e1-sparrow/generated"
 
 # The active project supplies the model, dataset, GQC specs, and config. Hardcoded
 # for now; a --project override can be added when more than one project exists.
@@ -56,7 +55,7 @@ dev = ["pytest>=8", "ruff>=0.5"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["projects/*/generated"]
+extend-exclude = [".cache"]
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]

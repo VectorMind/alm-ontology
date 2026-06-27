@@ -1,7 +1,7 @@
 """Serve generated reports from localhost with a small stdlib HTTP server.
 
 Plotly HTML is interactive opened directly as a file; this is a convenience for
-browsing all reports with a generated index.
+browsing all cached reports with a generated index.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from alm_core import paths
 
 
 def build_index() -> str:
-    """Write ``.report/index.html`` listing every report grouped by date."""
+    """Write ``report/index.html`` listing every report grouped by date."""
     paths.REPORT_DIR.mkdir(parents=True, exist_ok=True)
     items: list[str] = []
     for date_dir in sorted(paths.REPORT_DIR.glob("*"), reverse=True):

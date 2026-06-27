@@ -294,7 +294,7 @@ def _embed_query(profile: dict[str, Any], text: str) -> list[float]:
 def _fastembed_model(profile: dict[str, Any]) -> Any:
     from fastembed import TextEmbedding  # type: ignore[import-not-found]
 
-    cache_dir = paths.REPO_ROOT / ".cache" / "alm-ontology" / "models" / "fastembed"
+    cache_dir = paths.MODEL_CACHE_DIR / "fastembed"
     cache_dir.mkdir(parents=True, exist_ok=True)
     with _quiet_output():
         return TextEmbedding(

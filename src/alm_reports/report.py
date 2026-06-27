@@ -2,8 +2,8 @@
 interactive HTML report (Plotly charts + rustworkx-laid-out graph).
 
 Output convention (git-ignored):
-    .report/<YYYY-MM-DD>/<topic>-<HHMMSS>.md
-    .report/<YYYY-MM-DD>/<topic>-<HHMMSS>.html
+    .cache/projects/<project>/report/<YYYY-MM-DD>/<topic>-<HHMMSS>.md
+    .cache/projects/<project>/report/<YYYY-MM-DD>/<topic>-<HHMMSS>.html
 The Markdown carries narrative + tables and links to the HTML; the HTML carries the
 interactive charts. Plotly's JS is inlined once so the HTML is interactive as a file.
 """

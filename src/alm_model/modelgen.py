@@ -1,7 +1,8 @@
 """Layer 0 — generate Pydantic types, SQL DDL, and docs from the LinkML model.
 
 `model once, generate many`: alm.yaml is the single source of truth. This wraps the
-LinkML generator Python API (called in-process) and writes outputs into ``generated/``.
+LinkML generator Python API (called in-process) and writes outputs into the active
+project's generated cache.
 """
 
 from __future__ import annotations

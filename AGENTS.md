@@ -9,8 +9,8 @@ file is the short version.
 *Tables are truth, the graph is a regenerable view, the model is the schema.* Every engine and
 exposure is rebuilt from the tables on each run. Change the domain in the LinkML model
 (`projects/<name>/model/alm.yaml`) first, then regenerate (`almon model gen`) — never hand-edit
-`projects/<name>/generated/`. Do not commit built artifacts (`projects/<name>/data/warehouse/`,
-`.report/`); they are regenerable and gitignored.
+`.cache/projects/<name>/generated/`. Do not commit built artifacts under `.cache/`; they are
+regenerable and gitignored.
 
 ## Spec and planning workflow
 

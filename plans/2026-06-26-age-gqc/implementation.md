@@ -200,7 +200,8 @@ Implementation facts:
 - `almon rebuild-exposures` rebuilds FTS rows only; `almon rebuild-exposures --semantic` also builds
   FastEmbed vectors in pgvector.
 - FastEmbed uses the existing `fastembed_bge_small_en_v1_5` profile
-  (`BAAI/bge-small-en-v1.5`, 384 dims). Runtime model files cache under `.cache/alm-ontology/`.
+  (`BAAI/bge-small-en-v1.5`, 384 dims). Runtime model files cache under
+  `.cache/models/fastembed/`.
 - Search/semantic exposures are still rebuilt from the warehouse frames; they do not make Postgres
   the relational source of truth yet. That remains Phase 5.
 

@@ -1,9 +1,10 @@
 """Centralised filesystem paths, resolved against the active project.
 
-Project-specific artifacts (the LinkML model, its generated outputs, the authored
-dataset, the GQC specs, and reports) live under ``projects/<name>/``. The active
-project is hardcoded in ``pyproject.toml`` under ``[tool.almon] active_project``;
-if that is absent and exactly one project exists, it is used by default.
+Project-authored inputs (the LinkML model, dataset, GQC specs, and config) live under
+``projects/<name>/``. Project-generated outputs live under
+``.cache/projects/<name>/``. The active project is hardcoded in ``pyproject.toml``
+under ``[tool.almon] active_project``; if that is absent and exactly one project
+exists, it is used by default.
 """
 
 from __future__ import annotations
@@ -17,6 +18,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PKG_ROOT = Path(__file__).resolve().parent
 SRC_ROOT = REPO_ROOT / "src"
 PROJECTS_ROOT = REPO_ROOT / "projects"
+CACHE_ROOT = REPO_ROOT / ".cache"
+CACHE_PROJECTS_ROOT = CACHE_ROOT / "projects"
+MODEL_CACHE_DIR = CACHE_ROOT / "models"
 
 
 def _active_project_name() -> str:
@@ -43,11 +47,12 @@ def _active_project_name() -> str:
 
 ACTIVE_PROJECT = _active_project_name()
 PROJECT_ROOT = PROJECTS_ROOT / ACTIVE_PROJECT
+CACHE_PROJECT_ROOT = CACHE_PROJECTS_ROOT / ACTIVE_PROJECT
 
 # Model (the ontology, Layer 0) and its generated artifacts.
 MODEL_ROOT = PROJECT_ROOT / "model"
 MODEL_FILE = MODEL_ROOT / "alm.yaml"
-GENERATED_DIR = PROJECT_ROOT / "generated"
+GENERATED_DIR = CACHE_PROJECT_ROOT / "generated"
 GENERATED_TYPES = GENERATED_DIR / "alm_types.py"
 GENERATED_DDL = GENERATED_DIR / "alm_ddl.sql"
 GENERATED_DOCS = GENERATED_DIR / "docs"
@@ -66,4 +71,4 @@ CONFIG_DIR = PROJECT_ROOT / "config"
 EMBEDDINGS_FILE = CONFIG_DIR / "embeddings.yaml"
 
 # Generated reports (gitignored, regenerable).
-REPORT_DIR = PROJECT_ROOT / ".report"
+REPORT_DIR = CACHE_PROJECT_ROOT / "report"

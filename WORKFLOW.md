@@ -15,16 +15,15 @@ The durable contract lives in the model, not in prose:
 
 - `projects/<name>/model/alm.yaml` — the LinkML spine. Entity types, controlled vocabularies, and
   permitted relationships. Edit here first when the domain changes, then regenerate.
-- `projects/<name>/generated/` — Pydantic types, SQL DDL, docs **generated** from the model
-  (`almon model gen`). Committed for reviewability but regenerable; never hand-edit.
+- `.cache/projects/<name>/generated/` — Pydantic types, SQL DDL, docs **generated** from the
+  model (`almon model gen`). Regenerable and gitignored; never hand-edit.
 - `plans/concept-handover/` — the original handover, POC proposal, and research reports. Durable
   reference for *why* the architecture is shaped as it is. Read-only history; do not rewrite.
 
 ## Regenerable artifacts (do not commit)
 
-The built warehouse (`data/warehouse/`), reports (`.report/`), and caches are regenerable from the
-authored `data/` and are gitignored. Do not commit built data; commit the authored inputs and the
-code that rebuilds them.
+Generated outputs under `.cache/` are regenerable from the authored project inputs and are
+gitignored. Do not commit built data; commit the authored inputs and the code that rebuilds them.
 
 ## Plans
 

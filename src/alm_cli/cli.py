@@ -286,7 +286,7 @@ def report(
     topic: str = typer.Option("full", help="coverage | propagate | impact | full."),
     req: str = typer.Option("REQ-0110", help="Requirement id for the impact trace."),
 ) -> None:
-    """Generate a Markdown + interactive HTML report under .report/<date>/."""
+    """Generate a Markdown + interactive HTML report under the project report cache."""
     from alm_reports import report as report_mod
 
     out = report_mod.generate(topic=topic, req=req)
@@ -296,7 +296,7 @@ def report(
 
 
 @app.command()
-def serve(port: int = typer.Option(8000, help="Port to serve .report/ on.")) -> None:
+def serve(port: int = typer.Option(8000, help="Port to serve cached reports on.")) -> None:
     """Serve generated reports from http://localhost:<port>/."""
     from alm_reports import serve as serve_mod
 

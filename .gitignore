@@ -9,12 +9,5 @@ __pycache__/
 build/
 dist/
 
-# POC artifacts
-.report/
-projects/*/.report/
-projects/*/data/warehouse/
-
-# Per-project generated artifacts are regenerable via `almon model gen`.
-# Kept committed for now (the demo); uncomment to ignore once you're comfortable
-# rebuilding them on demand:
-# projects/*/generated/
+# Regenerable artifacts
+.cache/

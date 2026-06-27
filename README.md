@@ -91,14 +91,15 @@ uv run almon search "battery thermal"
 uv run --extra embeddings almon rebuild-exposures --semantic
 uv run --extra embeddings almon similar "battery thermal containment"
 uv run almon propagate
-uv run almon report --topic full # -> .report/<date>/full-<HHMM>.{md,html}
+uv run almon report --topic full # -> .cache/projects/<project>/report/<date>/full-<HHMM>.{md,html}
 uv run almon serve               # browse reports at http://localhost:8000
 ```
 
 ## Data contract
 
-Each project is self-contained under [`projects/<name>/`](projects/) — its model,
-dataset, generated artifacts, GQC specs, and config. The active project is set in
+Each project is self-contained under [`projects/<name>/`](projects/) for authored
+inputs: model, dataset, GQC specs, and config. Generated artifacts live under
+`.cache/projects/<name>/`. The active project is set in
 `pyproject.toml` under `[tool.almon]`; today it is
 [`vm-e1-sparrow`](projects/vm-e1-sparrow/).
 

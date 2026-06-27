@@ -74,8 +74,9 @@ def load_raw() -> dict[str, list[dict]]:
 def _load_dataset_class():
     """Load the ``Dataset`` Pydantic class from the active project's generated types.
 
-    The generated module lives under ``projects/<name>/generated/`` (not on the import
-    path), so it is loaded by file location. Run ``almon model gen`` if it is missing.
+    The generated module lives under ``.cache/projects/<name>/generated/`` (not on the
+    import path), so it is loaded by file location. Run ``almon model gen`` if it is
+    missing.
     """
     import importlib.util
     import sys
