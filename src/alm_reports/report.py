@@ -18,11 +18,10 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from alm_core import paths, queries, warehouse
-from alm_graph import duckpgq as graph_duckpgq
 from alm_graph import rustworkx as graph_rustworkx
+from alm_graph import sql as graph_sql
 from alm_reports import charts
 
-DISCLAIMER = "FULLY AI-GENERATED DUMMY EXAMPLE — NOT FOR REAL-WORLD USE."
 TOPICS = ["coverage", "propagate", "impact", "full"]
 
 
@@ -109,7 +108,7 @@ def _impact_sections(req: str) -> list[Section]:
     frames = warehouse.load_frames_from_db()
     g = graph_rustworkx.AlmGraph(frames)
     result = g.impact(req, max_depth=6)
-    sql_defects, backend = graph_duckpgq.impact(req, max_depth=6, engine="auto")
+    sql_defects, backend = graph_sql.impact(req, max_depth=6)
     agree = result.defects == sql_defects
 
     defects = frames["defects"]
@@ -173,11 +172,9 @@ def build_sections(topic: str, req: str) -> list[Section]:
 # --------------------------------------------------------------------------- #
 def _render_md(topic: str, when: datetime, sections: list[Section], html_name: str) -> str:
     out = [
-        f"> ⚠️ {DISCLAIMER}",
-        "",
         f"# ALM ontology report — {topic}",
         "",
-        f"_Generated {when:%Y-%m-%d %H:%M:%S} for the fictional VM-E1 Sparrow._",
+        f"_Generated {when:%Y-%m-%d %H:%M:%S} from the current validated ALM dataset._",
         "",
         f"Interactive charts and the traceability graph are in the companion HTML: "
         f"[`{html_name}`]({html_name}).",
@@ -194,9 +191,9 @@ def _render_md(topic: str, when: datetime, sections: list[Section], html_name: s
 
 def _render_html(topic: str, when: datetime, sections: list[Section]) -> str:
     body: list[str] = [
-        f'<div class="warn">⚠️ {_html.escape(DISCLAIMER)}</div>',
         f"<h1>ALM ontology report — {_html.escape(topic)}</h1>",
-        f"<p class='meta'>Generated {when:%Y-%m-%d %H:%M:%S} for the fictional VM-E1 Sparrow.</p>",
+        f"<p class='meta'>Generated {when:%Y-%m-%d %H:%M:%S} "
+        "from the current validated ALM dataset.</p>",
     ]
     first_fig = True
     for sec in sections:
@@ -217,8 +214,6 @@ def _render_html(topic: str, when: datetime, sections: list[Section]) -> str:
     style = """
     body { font-family: system-ui, Arial, sans-serif; margin: 2rem auto; max-width: 980px;
            color: #222; line-height: 1.5; }
-    .warn { background:#fff3cd; border:1px solid #e0c060; padding:.6rem .9rem; border-radius:6px;
-            font-weight:600; margin-bottom:1rem; }
     .meta { color:#666; }
     h1 { border-bottom:2px solid #eee; padding-bottom:.3rem; }
     h2 { margin-top:2rem; color:#2a4d75; }

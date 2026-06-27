@@ -6,7 +6,7 @@ import typer
 
 app = typer.Typer(
     name="almon",
-    help="ALM ontology POC - model, build, query, and report over the VM-E1 example.",
+    help="ALM ontology - model, build, query, and report over a validated ALM dataset.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -19,7 +19,7 @@ app.add_typer(graph_app, name="graph")
 
 @app.callback()
 def _main() -> None:
-    """ALM ontology POC CLI."""
+    """ALM ontology CLI."""
 
 
 @app.command()
@@ -93,7 +93,7 @@ def graph_validate_gqc() -> None:
 
 @app.command()
 def build() -> None:
-    """Load data/ and build the SQLite + Parquet warehouse."""
+    """Load data/ and build the Postgres warehouse tables."""
     from alm_core import warehouse
 
     typer.echo("Building warehouse from data/ ...")
@@ -105,7 +105,7 @@ def build() -> None:
         raise typer.Exit(code=1)
     for name, n in report.tables.items():
         typer.echo(f"  {name:22s} {n:5d} rows")
-    typer.secho(f"Warehouse built -> {report.sqlite_path}", fg=typer.colors.GREEN)
+    typer.secho(f"Warehouse built -> {report.postgres_dsn}", fg=typer.colors.GREEN)
 
 
 @app.command()
@@ -213,13 +213,21 @@ def impact(
     max_depth: int = typer.Option(6, help="Max composition depth to traverse."),
     engine: str = typer.Option(
         "all",
-        help="rustworkx | duckpgq | recursive | age | both | all (cross-engine check).",
+        help="rustworkx | recursive | age | both | all (cross-engine check).",
     ),
 ) -> None:
     """Trace a requirement -> architecture -> defects (variable-length path)."""
     from alm_graph import age as graph_age
-    from alm_graph import duckpgq as graph_duckpgq
     from alm_graph import rustworkx as graph_rustworkx
+    from alm_graph import sql as graph_sql
+
+    valid_engines = {"rustworkx", "recursive", "age", "both", "all"}
+    if engine not in valid_engines:
+        typer.secho(
+            f"Unsupported engine: {engine}. Choose from {', '.join(sorted(valid_engines))}.",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=2)
 
     multi = engine in ("both", "all")
     results: dict[str, list[str]] = {}
@@ -230,9 +238,8 @@ def impact(
         typer.echo(f"[rustworkx] elements reached: {len(rx_res.elements)}")
         typer.echo(f"[rustworkx] impacted defects ({len(rx_res.defects)}): {', '.join(rx_res.defects) or '(none)'}")
 
-    if engine in ("duckpgq", "recursive", "both", "all"):
-        sql_engine = "recursive" if engine == "recursive" else "auto"
-        sql_defects, backend = graph_duckpgq.impact(req, max_depth=max_depth, engine=sql_engine)
+    if engine in ("recursive", "both", "all"):
+        sql_defects, backend = graph_sql.impact(req, max_depth=max_depth)
         results[backend] = sql_defects
         typer.echo(f"[{backend}] impacted defects ({len(sql_defects)}): {', '.join(sql_defects) or '(none)'}")
 

@@ -1,4 +1,4 @@
-"""Layer 2 (analytical core) — DuckDB queries, including the completeness anti-join.
+"""Layer 2 (analytical core) — Postgres queries, including the completeness anti-join.
 
 `completeness is an anti-join, not a graph pattern`: graph matching tells you what
 *is* covered; the compliance question is what is *missing*, which is an anti-join.
@@ -28,7 +28,7 @@ def coverage_gaps(min_dal: str = "A") -> pd.DataFrame:
     critical = [d for d, sev in DAL_SEVERITY.items() if sev >= threshold]
     in_list = ", ".join(f"'{d}'" for d in critical)
 
-    con = warehouse.connect("parquet")
+    con = warehouse.connect()
     try:
         sql = f"""
         SELECT
@@ -47,7 +47,7 @@ def coverage_gaps(min_dal: str = "A") -> pd.DataFrame:
         GROUP BY r.id, r.title, r.dal
         ORDER BY r.dal, r.id
         """
-        return con.execute(sql).fetch_df()
+        return _fetch_df(con, sql)
     finally:
         con.close()
 
@@ -59,7 +59,7 @@ def coverage_gap_ids(min_dal: str = "A") -> tuple[list[str], str]:
 
 def coverage_summary() -> pd.DataFrame:
     """Per-DAL coverage: total requirements vs those with a passing test."""
-    con = warehouse.connect("parquet")
+    con = warehouse.connect()
     try:
         sql = """
         SELECT
@@ -75,7 +75,7 @@ def coverage_summary() -> pd.DataFrame:
         GROUP BY r.dal
         ORDER BY r.dal
         """
-        df = con.execute(sql).fetch_df()
+        df = _fetch_df(con, sql)
         df["uncovered"] = df["total"] - df["covered"]
         return df
     finally:
@@ -84,18 +84,19 @@ def coverage_summary() -> pd.DataFrame:
 
 def outcome_distribution() -> pd.DataFrame:
     """Test-outcome counts."""
-    con = warehouse.connect("parquet")
+    con = warehouse.connect()
     try:
-        return con.execute(
-            "SELECT outcome, COUNT(*) AS n FROM test_cases GROUP BY outcome ORDER BY outcome"
-        ).fetch_df()
+        return _fetch_df(
+            con,
+            "SELECT outcome, COUNT(*) AS n FROM test_cases GROUP BY outcome ORDER BY outcome",
+        )
     finally:
         con.close()
 
 
 def defects_per_element(top: int | None = None) -> pd.DataFrame:
     """Defect counts per directly-affected architecture element."""
-    con = warehouse.connect("parquet")
+    con = warehouse.connect()
     try:
         sql = """
         SELECT a.name, a.id, COUNT(e.defect) AS n_defects
@@ -105,7 +106,7 @@ def defects_per_element(top: int | None = None) -> pd.DataFrame:
         HAVING COUNT(e.defect) > 0
         ORDER BY n_defects DESC, a.id
         """
-        df = con.execute(sql).fetch_df()
+        df = _fetch_df(con, sql)
         if top:
             df = df.head(top)
         return df
@@ -121,3 +122,10 @@ def defect_counts_by_element(top: int | None = None) -> tuple[list[dict[str, int
         for _, row in df.iterrows()
     ]
     return rows, "recursive-sql"
+
+
+def _fetch_df(con, sql: str, params: tuple[object, ...] = ()) -> pd.DataFrame:
+    cur = con.execute(sql, params)
+    rows = cur.fetchall()
+    columns = [desc.name for desc in cur.description]
+    return pd.DataFrame(rows, columns=columns)

@@ -1,4 +1,4 @@
-"""Centralised filesystem paths for the POC."""
+"""Centralised filesystem paths for the repository."""
 
 from __future__ import annotations
 
@@ -20,9 +20,5 @@ DATA_DIR = REPO_ROOT / "data"
 REQUIREMENTS_DIR = DATA_DIR / "requirements"
 ARCHITECTURE_DIR = DATA_DIR / "architecture"
 DEFECTS_DIR = DATA_DIR / "defects"
-
-WAREHOUSE_DIR = DATA_DIR / "warehouse"
-SQLITE_PATH = WAREHOUSE_DIR / "alm.sqlite"
-PARQUET_DIR = WAREHOUSE_DIR / "parquet"
 
 REPORT_DIR = REPO_ROOT / ".report"

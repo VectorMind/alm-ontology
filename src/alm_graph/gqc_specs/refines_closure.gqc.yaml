@@ -39,7 +39,7 @@ engines:
   rustworkx:
     renderer: alm_graph.rustworkx:refines_closure
   recursive_sql:
-    renderer: alm_graph.duckpgq:refines_closure
+    renderer: alm_graph.sql:refines_closure
 
 fixtures:
   - id: refines-req-0112

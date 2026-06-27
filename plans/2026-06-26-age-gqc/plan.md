@@ -77,9 +77,9 @@ deployment (separate concern); MCP server surface (CLI verbs remain the contract
 | **OP-001** | AGE deployment target | **Resolved** | Self-hosted, Docker-only (no cloud) → AGE installable. Managed PG (RDS/Cloud SQL/Azure) cannot install AGE; revisit only if hosting model changes. |
 | **OP-002** | Embedding model (pgvector) | **Resolved** | Use local FastEmbed, aligned with `C:\dev\VectorMind\evidence-engine`: default profile `fastembed_bge_small_en_v1_5` / `BAAI/bge-small-en-v1.5` / 384 dims; keep profile configurable. |
 | **OP-003** | FTS engine | **Resolved** | Use native Postgres `tsvector` + GIN first. Do not add ParadeDB unless ranking quality creates a concrete need. |
-| **OP-004** | DuckDB/Parquet retention | **Resolved** | Remove DuckDB as a runtime/query engine and focus on Postgres. Parquet may remain only as a cheap export/interchange artifact, not as a query substrate. |
+| **OP-004** | DuckDB/Parquet retention | **Resolved** | Remove DuckDB and Parquet from the runtime/build path for now; focus on Postgres warehouse tables as the relational substrate. |
 | **OP-005** | GQC pattern formality | **Resolved** | Use structured YAML, LinkML-validated, with the closed shape set. `impact.gqc.yaml` is the first capability. |
-| **OP-006** | Migration style | **Resolved (direction)** | Incremental, on a feature branch; AGE added alongside DuckDB; rustworkx kept as infra-free oracle; DuckDB retired in Phase 5. |
+| **OP-006** | Migration style | **Resolved (direction)** | Incremental implementation; AGE added alongside the old path first; rustworkx kept as infra-free oracle; DuckDB retired in Phase 5. |
 | **OP-007** | Canonical edge naming | **Resolved** | LinkML owns ontologically relevant inverse relations. `satisfied_by` is now declared in LinkML as the inverse of `satisfies`; GQC consumes that model relation rather than defining the inverse itself. |
 | **OP-008** | FTS/semantic plan home | **Resolved** | Folded into this packet (not a sibling plan). |
 
@@ -93,7 +93,7 @@ deployment (separate concern); MCP server surface (CLI verbs remain the contract
 4. **Search + semantic exposures** — `searchable`/`embeddable` annotations → `tsvector` + `pgvector`;
    `almon search` / `almon similar`.
 5. **Parity + cleanup** — relational tables created in PG from LinkML; move `recursive_sql` onto PG;
-   repoint reports; retire DuckDB-as-substrate; keep Parquet only as export/interchange if useful.
+   repoint reports; retire DuckDB and Parquet from the active runtime/build path.
 
 ## Dependencies and risks
 
@@ -116,4 +116,5 @@ deployment (separate concern); MCP server surface (CLI verbs remain the contract
 - LinkML drives relational DDL, AGE labels, and exposure columns; the two-schema split is gone.
 - Search and semantic exposures answer `almon search` / `almon similar` from the rebuilt-from-tables
   indexes.
-- Deleting the warehouse + rebuilding reproduces identical results on every engine (regenerable view).
+- Rebuilding the Postgres warehouse tables reproduces identical results on every engine
+  (regenerable view).

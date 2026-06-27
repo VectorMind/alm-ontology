@@ -5,7 +5,7 @@ alongside the recursive CTE and rustworkx, computing ``impact`` via Cypher over 
 rebuilt from the warehouse tables on every call.
 
 `tables are truth, the graph is a regenerable view`: the ``alm`` AGE graph is dropped and
-recreated from the Parquet warehouse frames each run — nothing is stored here. The Cypher result
+recreated from the Postgres warehouse frames each run — nothing is stored here. The Cypher result
 is asserted equal to the recursive-SQL and rustworkx engines (cross-engine agreement).
 
 AGE ergonomics handled here (see the plan's risks and implementation log): every Cypher query is wrapped in
@@ -20,7 +20,7 @@ import os
 
 import pandas as pd
 
-from alm_core import data_io, warehouse
+from alm_core import data_io, postgres, warehouse
 
 GRAPH_NAME = "alm"
 
@@ -47,23 +47,9 @@ EDGE_SPECS: dict[str, tuple[str, str, str]] = {
 SKIP_PROPS: frozenset[str] = frozenset({"statement", "acceptance", "rationale", "description"})
 
 
-# --- connection ----------------------------------------------------------
-def _conn_params() -> dict[str, object]:
-    """Postgres connection params (env-overridable; defaults match docker-compose.yml)."""
-    return {
-        "host": os.environ.get("ALM_PG_HOST", "localhost"),
-        "port": int(os.environ.get("ALM_PG_PORT", "5432")),
-        "user": os.environ.get("ALM_PG_USER", "postgres"),
-        "password": os.environ.get("ALM_PG_PASSWORD", "postgres"),
-        "dbname": os.environ.get("ALM_PG_DB", "alm"),
-    }
-
-
 def connect():
     """Open an AGE-ready psycopg connection (autocommit; extension loaded, search_path set)."""
-    import psycopg
-
-    con = psycopg.connect(**_conn_params(), autocommit=True, connect_timeout=5)
+    con = postgres.connect()
     con.execute("CREATE EXTENSION IF NOT EXISTS age;")
     con.execute("LOAD 'age';")
     con.execute('SET search_path = ag_catalog, "$user", public;')

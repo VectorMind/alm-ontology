@@ -32,9 +32,10 @@ randomly synthesised, and it is committed for reproducibility.
 
 ## Built warehouse
 
-`data/warehouse/` (SQLite + Parquet) is **regenerated** from these files by
-`uv run almon build` and is git-ignored. These authored YAML/Markdown files are the
-inputs of record.
+Postgres warehouse tables are **regenerated** from these files by `uv run almon build`.
+These authored YAML/Markdown files are the inputs of record. For how the warehouse is
+projected into graphs, search, and answers, see
+[docs/architecture.md](../docs/architecture.md).
 
 ## Deliberately seeded findings
 

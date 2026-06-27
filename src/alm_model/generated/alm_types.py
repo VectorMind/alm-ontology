@@ -68,13 +68,12 @@ class LinkMLMeta(RootModel):
 
 linkml_meta = LinkMLMeta({'default_prefix': 'alm',
      'default_range': 'string',
-     'description': 'LinkML model (Layer 0, the spine) for the ALM ontology POC. '
-                    'Defines the entity types, controlled vocabularies (DAL), and '
-                    "permitted relationships for the fictional VM-E1 'Sparrow' "
-                    'single-seat electric aircraft. This single artifact is the '
-                    'source of truth from which Pydantic types, SQL DDL, and '
-                    'documentation are generated. FULLY AI-GENERATED DUMMY MODEL — '
-                    'not for real-world use.',
+     'description': 'LinkML model (Layer 0, the spine) for the ALM ontology. '
+                    'Defines the entity types, controlled vocabularies, and '
+                    'permitted relationships for requirements, architecture '
+                    'elements, verification evidence, and defects. This single '
+                    'artifact is the schema source of truth from which Pydantic '
+                    'types, SQL DDL, and documentation are generated.',
      'id': 'https://vectormind.example/alm-ontology',
      'imports': ['linkml:types'],
      'license': 'MIT',
@@ -84,7 +83,7 @@ linkml_meta = LinkMLMeta({'default_prefix': 'alm',
                   'linkml': {'prefix_prefix': 'linkml',
                              'prefix_reference': 'https://w3id.org/linkml/'}},
      'source_file': 'C:\\dev\\VectorMind\\alm-ontology\\src\\alm_model\\model\\alm.yaml',
-     'title': 'ALM Ontology (VM-E1 example slice)'} )
+     'title': 'ALM Ontology'} )
 
 class DALEnum(str, Enum):
     """

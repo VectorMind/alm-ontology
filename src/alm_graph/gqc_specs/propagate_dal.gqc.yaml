@@ -28,7 +28,7 @@ engines:
   rustworkx:
     renderer: alm_graph.rustworkx:propagate_dal
   recursive_sql:
-    renderer: alm_graph.duckpgq:propagate_dal
+    renderer: alm_graph.sql:propagate_dal
 
 fixtures:
   - id: propagate-airframe

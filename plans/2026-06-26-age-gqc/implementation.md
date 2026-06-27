@@ -2,8 +2,8 @@
 
 ## Progress
 
-`â–°â–°â–°â–°â–± Phase 4/5` â€” Phase 4 (search and semantic exposures) done and proven; next is Phase 5
-(Postgres relational parity and DuckDB retirement).
+`Done` - Phase 5 (Postgres relational parity and DuckDB/Parquet retirement) is implemented and
+proven.
 
 ---
 
@@ -232,7 +232,7 @@ packages:
 - **`src/alm_core/`** — shared paths, data loading, warehouse build/readback, and analytical SQL
   query helpers.
 - **`src/alm_model/`** — LinkML model, model generation, and generated artifacts.
-- **`src/alm_graph/`** — AGE, recursive SQL/DuckPGQ compatibility, rustworkx, GQC validator, and GQC
+- **`src/alm_graph/`** — AGE, recursive SQL, rustworkx, GQC validator, and GQC
   YAML specs.
 - **`src/alm_exposure/`** — Postgres FTS/pgvector exposure rebuild and query code.
 - **`src/alm_reports/`** — report, chart, and local report serving code.
@@ -244,8 +244,69 @@ explicitly, excludes `src/alm_model/generated` from Ruff, and sets pytest `testp
 `handoff.md` was deleted by maintainer request; ongoing operational notes now live in this
 implementation log.
 
-## Remaining (Phase 5)
+## Done (Phase 5 - Postgres relational parity and DuckDB/Parquet retirement)
 
-- **Phase 5** â€” create relational tables in PG from LinkML; move `recursive_sql` onto PG; collapse the
-  two-schema split; repoint reports; retire DuckDB-as-substrate (keep Parquet only as export/interchange
-  if useful).
+The active runtime/build path now uses Postgres warehouse tables only. DuckDB and Parquet were
+removed from the code path and dependency graph.
+
+Files changed:
+
+- **`src/alm_core/postgres.py`** (new) - shared env-overridable Postgres connection helper. The
+  default host is `127.0.0.1` to avoid the 5s IPv6 fallback delay observed with `localhost`.
+- **`src/alm_core/warehouse.py`** - `almon build` now validates authored YAML and replaces native
+  Postgres tables (`requirements`, `architecture_elements`, `test_cases`, `defects`, and edge
+  tables). It no longer writes SQLite or Parquet artifacts.
+- **`src/alm_graph/sql.py`** (new) - native Postgres recursive-SQL renderers for `impact`,
+  `propagate_dal`, and `refines_closure`.
+- **`src/alm_graph/duckpgq.py`** - removed.
+- **`src/alm_core/queries.py`**, **`src/alm_reports/report.py`**, **`src/alm_cli/cli.py`**, and GQC
+  YAML renderer pointers - repointed from DuckDB/DuckPGQ to Postgres recursive SQL.
+- **`pyproject.toml` / `uv.lock`** - removed `duckdb` and `pyarrow`.
+- **`src/tests/test_cross_engine.py`** - AGE agreement tests now rebuild the persisted AGE graph once
+  and query it with `rebuild_graph=False`; product defaults still rebuild on query.
+
+Implementation facts:
+
+- `almon build` now reports `Warehouse built -> postgres@127.0.0.1:5432/alm`.
+- Recursive SQL, AGE, rustworkx, FTS, and pgvector all rebuild/read from the same Postgres warehouse
+  tables.
+- The active source and top-level docs have no remaining `duckdb`, `duckpgq`, `parquet`, `pyarrow`,
+  or SQLite runtime references.
+- AGE graph rebuilds mutate the shared graph name `alm`; do not run two AGE graph rebuild/query
+  smoke tests concurrently against the same local database.
+
+Commands / proof:
+
+```
+uv lock
+# Removed duckdb v1.5.4
+# Removed pyarrow v24.0.0
+
+uv run almon build
+# requirements 39; architecture_elements 28; test_cases 39; defects 20
+# edge_refines 37; edge_composed_of 27; edge_satisfied_by 35; edge_affects 23; edge_violates 23
+# Warehouse built -> postgres@127.0.0.1:5432/alm
+
+uv run pytest -q
+# 35 passed in 4.44s
+
+uv run ruff check .
+# All checks passed!
+
+uv run almon graph validate-gqc
+# coverage_gaps: ok; defects_per_element: ok; impact: ok; propagate_dal: ok; refines_closure: ok
+# GQC validation passed.
+
+uv run almon impact --req REQ-0110 --engine all
+# rustworkx, recursive-sql, and age all return DEF-0001, DEF-0004, DEF-0016
+# Cross-engine agreement: MATCH (OK)
+
+uv run --extra embeddings almon rebuild-exposures --semantic
+# search documents 126 rows; embeddings 126 rows
+
+uv run almon search "battery thermal" --limit 2
+# returns REQ-0115 and REQ-0111
+
+uv run --extra embeddings almon similar "battery thermal containment" --limit 3
+# returns ARC-BATT, REQ-0115, and REQ-0111
+```

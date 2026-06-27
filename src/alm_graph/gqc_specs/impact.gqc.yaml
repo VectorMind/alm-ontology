@@ -47,7 +47,7 @@ engines:
   rustworkx:
     renderer: alm_graph.rustworkx:impact
   recursive_sql:
-    renderer: alm_graph.duckpgq:impact_recursive
+    renderer: alm_graph.sql:impact_recursive
   cypher_age:
     renderer: alm_graph.age:impact
 
