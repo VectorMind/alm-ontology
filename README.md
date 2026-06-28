@@ -16,12 +16,12 @@ See [docs/architecture.md](docs/architecture.md) for the full design.
 | **Model (spine)** | A single LinkML schema → generated Pydantic types, SQL DDL, docs |
 | **Substrate** | Committed authored YAML -> rebuilt Postgres warehouse tables |
 | **Graph/query contract** | Apache AGE/openCypher + recursive SQL + rustworkx, governed by GQC |
-| **In-memory inference** | rustworkx — auditable DAL propagation & traceability paths |
+| **In-memory inference** | rustworkx — auditable criticality propagation & traceability paths |
 
 The graph engines are rebuilt from the tables; automated cross-engine checks assert
 their `impact` results agree, proving the graph is a faithful regenerable view. The
 first formal Graph Query Contract (GQC) capability is
-[`impact.gqc.yaml`](projects/vm-e1-sparrow/gqc/impact.gqc.yaml).
+`projects/project-name/gqc/impact.gqc.yaml`.
 
 ### The concepts and how they layer
 
@@ -66,14 +66,14 @@ left-spine-down for data flow (authored → truth → graph → answers).
 
 | Concept | Realization in this repo |
 |---|---|
-| **Ontology** | LinkML schema [`alm.yaml`](projects/vm-e1-sparrow/model/alm.yaml) → generated Pydantic types, SQL DDL, docs |
-| **Source of truth** | Committed `projects/vm-e1-sparrow/data/*.yaml`, validated, loaded into Postgres warehouse node + edge tables |
+| **Ontology** | LinkML schema `projects/project-name/model/alm.yaml` → generated Pydantic types, SQL DDL, docs |
+| **Source of truth** | Committed `projects/project-name/data/*.yaml`, validated, loaded into Postgres warehouse node + edge tables |
 | **Graph** | Rebuilt from the tables on demand — *tables are truth, the graph is a regenerable view* |
-| **Query contract** | GQC specs [`*.gqc.yaml`](projects/vm-e1-sparrow/gqc/), validated against the ontology's classes & slots |
-| **Lower-layer query evidence** | Current AGE/openCypher and Postgres SQL query forms under [`graph-queries/`](projects/vm-e1-sparrow/graph-queries/) |
+| **Query contract** | GQC specs `projects/project-name/gqc/*.gqc.yaml`, validated against the ontology's classes & slots |
+| **Lower-layer query evidence** | Current AGE/openCypher and Postgres SQL query forms under `projects/project-name/graph-queries/` |
 | **Graph engines** | Apache AGE / openCypher · recursive SQL · rustworkx (in-memory) — one contract, asserted to agree |
 | **Search exposures** | Postgres full-text search · pgvector semantic similarity |
-| **Answers** | impact · coverage · DAL propagation · refines closure · search |
+| **Answers** | impact · coverage · criticality propagation · refines closure · search |
 
 ## Quickstart
 
@@ -92,32 +92,29 @@ uv run almon search "battery thermal"
 uv run --extra embeddings almon rebuild-exposures --semantic
 uv run --extra embeddings almon similar "battery thermal containment"
 uv run almon propagate
-uv run almon report --topic full # -> .cache/projects/<project>/report/<date>/full-<HHMM>.{md,html}
+uv run almon report --topic full # -> .cache/projects/project-name/report/<date>/full-<HHMM>.{md,html}
 uv run almon serve               # browse reports at http://localhost:8000
 ```
 
 ## Data contract
 
-Each project is self-contained under [`projects/<name>/`](projects/) for authored
-inputs: model, dataset, GQC specs, lower-layer query evidence, and config. Generated artifacts live under
-`.cache/projects/<name>/`. The active project is set in
-`pyproject.toml` under `[tool.almon]`; today it is
-[`vm-e1-sparrow`](projects/vm-e1-sparrow/).
+Each project is self-contained under [`projects/project-name/`](projects/) for
+authored inputs: model, dataset, GQC specs, lower-layer query evidence, and config.
+Generated artifacts live under `.cache/projects/project-name/`. The active project
+is set in `pyproject.toml` under `[tool.almon]`.
 
-The bundled [`projects/vm-e1-sparrow/data/`](projects/vm-e1-sparrow/data/) tree is a
-fully fictional VM-E1 example dataset. It is there to exercise the tooling and carries
-the dummy-data notice inside the data folder. The repository itself is intended to be
-reusable with production ALM data that conforms to the normalized contract documented
-in [docs/data-contract.md](docs/data-contract.md).
+The repository is intended to be reusable with production ALM data that conforms to
+the normalized contract documented in [docs/data-contract.md](docs/data-contract.md).
+Project-specific notices, examples, and domain descriptions live inside the project
+folder.
 
-## The bundled example domain
+## Example project structure
 
-A single-seat electric light aircraft, **VM-E1 *Sparrow***. The data lives under
-[`projects/vm-e1-sparrow/data/`](projects/vm-e1-sparrow/data/) in three folders:
+A project dataset lives under `projects/project-name/data/` in three folders:
 
 - **`requirements/`** — the binding specification (the *what*): requirements with a
-  Design Assurance Level (DAL A–E), acceptance criteria, and `refines` chains;
-  co-located test cases that `verify` requirements with a passed/failed/not-run outcome.
+  criticality level, acceptance criteria, and `refines` chains; co-located test cases
+  that `verify` requirements with a passed/failed/not-run outcome.
 - **`architecture/`** — the technical breakdown (the *how*): components and their
   composition, component diagrams, interaction/sequence diagrams, and the allocation
   of requirements to components. Authored *from* the requirements.

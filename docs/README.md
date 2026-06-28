@@ -12,6 +12,6 @@ use the project. These pages are written for someone *using* the repository.
   the diagram in the [root README](../README.md), and the disciplines that keep the
   graph a faithful, regenerable view of the data.
 - [data-contract.md](data-contract.md) — the normalized dataset shape required for
-  replacing the bundled VM-E1 example with production ALM data.
+  loading project data into the ALM ontology pipeline.
 
 This folder is expected to grow — add a new page here and link it from this index.

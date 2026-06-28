@@ -39,14 +39,14 @@ constrains which questions the query contract may pose.
 
 | Concept | Realization in this repo |
 |---|---|
-| **Ontology** | LinkML schema [`alm.yaml`](../projects/vm-e1-sparrow/model/alm.yaml) → generated Pydantic types, SQL DDL, and docs ([`modelgen.py`](../src/alm_model/modelgen.py)). |
-| **Source of truth** | Committed [`data/*.yaml`](../projects/vm-e1-sparrow/data/), validated and loaded into Postgres warehouse node + edge tables ([`warehouse.py`](../src/alm_core/warehouse.py)). |
+| **Ontology** | LinkML schema `projects/project-name/model/alm.yaml` → generated Pydantic types, SQL DDL, and docs ([`modelgen.py`](../src/alm_model/modelgen.py)). |
+| **Source of truth** | Committed `projects/project-name/data/*.yaml`, validated and loaded into Postgres warehouse node + edge tables ([`warehouse.py`](../src/alm_core/warehouse.py)). |
 | **Graph** | Rebuilt from the tables on demand — *tables are truth, the graph is a regenerable view*. |
-| **Query contract** | Graph Query Contract specs [`*.gqc.yaml`](../projects/vm-e1-sparrow/gqc/), validated against the ontology's classes and slots ([`gqc.py`](../src/alm_graph/gqc.py)). |
-| **Lower-layer query evidence** | Human-readable AGE/openCypher and Postgres SQL forms under [`graph-queries/`](../projects/vm-e1-sparrow/graph-queries/). |
+| **Query contract** | Graph Query Contract specs `projects/project-name/gqc/*.gqc.yaml`, validated against the ontology's classes and slots ([`gqc.py`](../src/alm_graph/gqc.py)). |
+| **Lower-layer query evidence** | Human-readable AGE/openCypher and Postgres SQL forms under `projects/project-name/graph-queries/`. |
 | **Graph engines** | Apache AGE / openCypher ([`age.py`](../src/alm_graph/age.py)), recursive SQL ([`sql.py`](../src/alm_graph/sql.py)), and in-memory rustworkx ([`rustworkx.py`](../src/alm_graph/rustworkx.py)). |
 | **Search exposures** | Postgres full-text search and pgvector semantic similarity ([`pg.py`](../src/alm_exposure/pg.py)). |
-| **Answers** | impact · coverage · DAL propagation · refines closure · search. |
+| **Answers** | impact · coverage · criticality propagation · refines closure · search. |
 
 ## The model is the single source of truth
 
@@ -56,16 +56,16 @@ all downstream artifacts together, so they cannot drift apart.
 
 The constraint split mirrors the cost of the check:
 
-- **Structural** validation (required fields, the DAL vocabulary, cardinalities)
+- **Structural** validation (required fields, controlled vocabularies, cardinalities)
   runs cheaply against the generated Pydantic types when `data/` is loaded.
-- **Cross-entity completeness** ("every DAL-A requirement has a passing verifying
+- **Cross-entity completeness** ("every critical requirement has a passing verifying
   test") is a relational query over the warehouse tables.
 
 ## The Graph Query Contract (GQC)
 
 GQC describes the supported graph questions as a small, closed set of **named,
 finite capabilities** — not a general query language. Each capability (for example
-[`impact.gqc.yaml`](../projects/vm-e1-sparrow/gqc/impact.gqc.yaml)) is a YAML document
+`projects/project-name/gqc/impact.gqc.yaml`) is a YAML document
 that records:
 
 - the **shape** of the question (closure, fixed multi-hop path, anti-join, …);
@@ -83,9 +83,8 @@ One contract, several backends: the same `impact` question is answered by AGE
 
 ## Lower-layer query evidence
 
-The files under
-[`projects/vm-e1-sparrow/graph-queries/`](../projects/vm-e1-sparrow/graph-queries/)
-show the current query forms behind the GQC capabilities. They are intentionally
+The files under `projects/project-name/graph-queries/` show the current query forms
+behind the GQC capabilities. They are intentionally
 named as graph queries, not GQL or SQL/PGQ: today the runtime forms are Apache AGE's
 openCypher subset and Postgres SQL.
 
@@ -123,23 +122,20 @@ Which text is indexed or embedded is itself driven by the ontology: slots annota
 `searchable` / `embeddable` in `alm.yaml` decide what flows into the search
 documents.
 
-## Domain note: DAL, not ASIL
+## Domain-specific terms live in the project
 
-The example domain is aerospace, so the controlled vocabulary is **DAL — Design
-Assurance Level — A through E** (DO-178C / ARP4754A), where A is most critical
-(catastrophic) and E is no-effect. The mechanism is the familiar criticality-level
-pattern — it propagates down the architecture composition and requires a qualifying
-passing test for critical items — only the vocabulary is domain-specific.
-
-The bundled VM-E1 records are example data only; the dataset-specific notice lives
-in the [data README](../projects/vm-e1-sparrow/data/README.md).
+Criticality vocabularies, example domains, and dataset-specific notices belong to
+the active project under `projects/project-name/`. The repository-level mechanism is
+generic: the model defines the allowed terms, structural validation enforces them,
+and cross-entity checks run over the warehouse tables built from the authored
+dataset.
 
 ## Extending it
 
-- **Replace the bundled data:** emit the normalized dataset shape in
+- **Replace a project dataset:** emit the normalized dataset shape in
   [data-contract.md](data-contract.md), then run validation before rebuilding the
   warehouse and graph views.
-- **Add or change an entity or relationship:** edit [`alm.yaml`](../projects/vm-e1-sparrow/model/alm.yaml),
+- **Add or change an entity or relationship:** edit `projects/project-name/model/alm.yaml`,
   run `almon model gen`, and update the project's `data/` to match.
 - **Add a new graph question:** author a new `*.gqc.yaml` capability, implement its
   renderer(s), and add fixtures. The GQC validator will hold it to the model.

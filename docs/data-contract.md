@@ -8,7 +8,7 @@ warehouse loading, graph rebuilding, search indexing, or report generation.
 ## The model defines this contract
 
 The authority for everything in this document is the LinkML model
-[`projects/<name>/model/alm.yaml`](../projects/vm-e1-sparrow/model/alm.yaml). It declares the
+`projects/project-name/model/alm.yaml`. It declares the
 four classes (`Requirement`, `ArchitectureElement`, `TestCase`, `Defect`), their
 slots, the controlled vocabularies (`DALEnum`, `ElementKindEnum`, `OutcomeEnum`,
 `SeverityEnum`, `DefectStatusEnum`), and the relationships. **The Record Contract and
@@ -18,7 +18,7 @@ the model is the source of truth, not this page.**
 Why this matters in practice:
 
 - `uv run almon model gen` generates Pydantic types, SQL DDL, and docs *from*
-  `alm.yaml` under `.cache/projects/<project>/generated/`. The generated Pydantic
+  `alm.yaml` under `.cache/projects/project-name/generated/`. The generated Pydantic
   types are what `uv run almon validate` uses to structurally check authored `data/`,
   so the contract is **enforced** by the model, not merely described here.
 - The allowed values in the field tables (DAL, kind, outcome, severity, status) are
@@ -60,7 +60,8 @@ of it. See [docs/architecture.md](architecture.md) for the layers in depth.
 ## Boundary
 
 The contract starts at the authored dataset root, the active project's `data/`
-folder (currently `projects/vm-e1-sparrow/data/`). Everything downstream is derived:
+folder, for example `projects/project-name/data/`. Everything downstream is
+derived:
 
 - LinkML structural validation reads the merged dataset.
 - Referential validation checks relationship targets.
@@ -74,7 +75,7 @@ The contract is therefore the normalized input shape, not a raw export format.
 ## Dataset Layout
 
 ```text
-projects/<name>/data/
+projects/project-name/data/
   requirements/
     requirements.yaml
     tests.yaml
